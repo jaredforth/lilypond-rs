@@ -7,7 +7,7 @@
 
 A Rust wrapper and types for [GNU LilyPond](https://lilypond.org/).
 
-**lilypond-rs** provides an API to ergonomically wrap LilyPond, and provide Rust types that resolve to LilyPond output.
+**lilypond-rs** provides an API to ergonomically wrap LilyPond, and provide Rust types that resolve to LilyPond output. This is still a work in progress and is not stable as of yet.
 
 Documentation:
 -   [API Reference](https://docs.rs/lilypond)
