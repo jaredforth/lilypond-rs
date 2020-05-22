@@ -9,7 +9,7 @@
 /// and can be designated by both
 /// [scientific pitch](https://en.wikipedia.org/wiki/Scientific_pitch_notation)
 /// and [helmholtz pitch](https://en.wikipedia.org/wiki/Helmholtz_pitch_notation).
-pub enum Pitch {
+pub enum Note {
     /// ## A Defaults:
     ///
     /// Scientific: A3
@@ -45,4 +45,33 @@ pub enum Pitch {
     /// Scientific: F3
     /// Helmholtz: f
     G
+}
+
+/// Octaves a pitch can have
+///
+/// [Scientific Pitch](https://en.wikipedia.org/wiki/Scientific_pitch_notation)
+/// is used to represent possible octave values.
+pub enum Octave {
+    S0,
+    S1,
+    S2,
+    S3,
+    S4,
+    S5,
+    S6,
+    S7,
+    S8,
+    S9,
+}
+
+/// Accidentals a natural note can have
+pub enum Accidental {
+    Sharp,
+    Flat
+}
+
+pub struct Pitch {
+    note: Note,
+    octave: Octave,
+    accidental: Accidental
 }
