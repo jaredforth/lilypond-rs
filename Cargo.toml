@@ -18,3 +18,4 @@ travis-ci = { repository = "jaredforth/lilypond" }
 appveyor = { repository = "jaredforth/lilypond" }
 
 [dependencies]
+fsutils = "0.1.2"
