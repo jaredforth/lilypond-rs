@@ -5,7 +5,7 @@
 
 # lilypond-rs
 
-A Rust wrapper and types for [GNU LilyPond](https://lilypond.org/)
+A Rust wrapper and types for [GNU LilyPond](https://lilypond.org/).
 
 **lilypond-rs** provides an API to ergonomically wrap LilyPond, and provide Rust types that resolve to LilyPond output.
 
@@ -20,6 +20,27 @@ Add this to your `Cargo.toml`:
 ```toml
 [dependencies]
 lilypond = "0.1"
+```
+
+## Installing LilyPond
+
+Because this library wraps LilyPond, the [GNU LilyPond](https://lilypond.org/) program must be installed before library usage.
+
+After you install LilyPond, check to see if LilyPond is installed:
+
+```shell script
+lilypond --version
+GNU LilyPond 2.20.0
+
+Copyright (c) 1996--2015 by
+  Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Jan Nieuwenhuizen <janneke@gnu.org>
+  and others.
+
+This program is free software.  It is covered by the GNU General Public
+License and you are welcome to change it and/or distribute copies of it
+under certain conditions.  Invoke as `lilypond --warranty' for more
+information.
 ```
 
 ## Inspiration
