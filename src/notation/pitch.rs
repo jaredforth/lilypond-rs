@@ -9,6 +9,7 @@
 /// and can be designated by both
 /// [scientific pitch](https://en.wikipedia.org/wiki/Scientific_pitch_notation)
 /// and [helmholtz pitch](https://en.wikipedia.org/wiki/Helmholtz_pitch_notation).
+#[derive(PartialEq, Debug)]
 pub enum Note {
     /// ## A Defaults:
     ///
@@ -51,6 +52,7 @@ pub enum Note {
 ///
 /// [Scientific Pitch](https://en.wikipedia.org/wiki/Scientific_pitch_notation)
 /// is used to represent possible octave values.
+#[derive(PartialEq, Debug)]
 pub enum Octave {
     S0,
     S1,
@@ -70,6 +72,7 @@ impl Default for Octave {
 }
 
 /// Accidentals a natural note can have
+#[derive(PartialEq, Debug)]
 pub enum Accidental {
     None,
     Sharp,
@@ -81,13 +84,41 @@ impl Default for Accidental {
     fn default() -> Self { Accidental::None }
 }
 
+/// A single pitch
+#[derive(PartialEq, Debug)]
 pub struct Pitch {
-    note: Note,
-    octave: Octave,
-    accidental: Accidental
+    /// The note letter name
+    ///
+    /// e.g. C, E, or G
+    pub note: Note,
+    /// Octave value in scientific
+    /// pitch notation.
+    ///
+    /// e.g. C4, D5
+    pub octave: Octave,
+    /// Accidental value
+    ///
+    /// e.g. None, # or b
+    pub accidental: Accidental
 }
 
 impl Pitch {
+    /// Construct a new pitch
+    ///
+    /// This will take a note name, and
+    /// initialize with default values.
+    ///
+    /// # Usage:
+    ///
+    /// ```
+    /// use lilypond::notation::pitch::{Pitch, Note, Accidental, Octave};
+    ///
+    /// let pitch = Pitch::new(Note::A);
+    ///
+    /// assert_eq!(pitch.note, Note::A);
+    /// assert_eq!(pitch.octave, Octave::S3);
+    /// assert_eq!(pitch.accidental, Accidental::None);
+    /// ```
     pub fn new(note: Note) -> Pitch {
         Pitch {
             note,
