@@ -156,4 +156,34 @@ impl Pitch {
     pub fn accidental(&mut self, accidental: Accidental) {
         self.accidental = accidental;
     }
+    /// Sharpen pitch
+    ///
+    /// # Usage:
+    ///
+    /// ```
+    /// use lilypond::notation::pitch::{Pitch, Note, Octave, Accidental};
+    ///
+    /// let mut  pitch = Pitch::new(Note::A);
+    /// pitch.sharpen();
+    ///
+    /// assert_eq!(Accidental::Sharp, pitch.accidental)
+    /// ```
+    pub fn sharpen(&mut self) {
+        self.accidental = Accidental::Sharp
+    }
+    /// Flatten pitch
+    ///
+    /// # Usage:
+    ///
+    /// ```
+    /// use lilypond::notation::pitch::{Pitch, Note, Octave, Accidental};
+    ///
+    /// let mut  pitch = Pitch::new(Note::A);
+    /// pitch.flatten();
+    ///
+    /// assert_eq!(Accidental::Flat, pitch.accidental)
+    /// ```
+    pub fn flatten(&mut self) {
+        self.accidental = Accidental::Flat
+    }
 }
