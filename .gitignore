@@ -2,3 +2,5 @@
 Cargo.lock
 .idea
 src/main.rs
+*.ly
+*.pdf
