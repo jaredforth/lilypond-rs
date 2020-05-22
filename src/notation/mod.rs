@@ -2,3 +2,4 @@
 
 pub mod pitch;
 pub mod rhythm;
+pub mod note;
