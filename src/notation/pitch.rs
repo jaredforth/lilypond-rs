@@ -126,4 +126,34 @@ impl Pitch {
             accidental: Default::default()
         }
     }
+    /// Set absolute octave value for a pitch
+    ///
+    /// # Usage:
+    ///
+    /// ```
+    /// use lilypond::notation::pitch::{Pitch, Note, Octave};
+    ///
+    /// let mut  pitch = Pitch::new(Note::A);
+    /// pitch.octave(Octave::S6);
+    ///
+    /// assert_eq!(Octave::S6, pitch.octave)
+    /// ```
+    pub fn octave(&mut self, octave: Octave) {
+        self.octave = octave;
+    }
+    /// Set absolute accidental value for a pitch
+    ///
+    /// # Usage:
+    ///
+    /// ```
+    /// use lilypond::notation::pitch::{Pitch, Note, Octave, Accidental};
+    ///
+    /// let mut  pitch = Pitch::new(Note::A);
+    /// pitch.accidental(Accidental::Sharp);
+    ///
+    /// assert_eq!(Accidental::Sharp, pitch.accidental)
+    /// ```
+    pub fn accidental(&mut self, accidental: Accidental) {
+        self.accidental = accidental;
+    }
 }
