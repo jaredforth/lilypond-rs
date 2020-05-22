@@ -14,20 +14,49 @@ use std::process::Command;
 use std::io::{self, Write};
 
 /// Compiles a `.ly` source file
-pub fn compile() {
+///
+/// # Usage
+///
+/// ```
+/// use lilypond::compile;
+///
+/// let input = "test.ly";
+/// let output = "test.pdf";
+/// // Create test input file
+/// fsutils::write_file(input, "{ c e g }");
+///
+/// if compile(input) {
+///    // LilyPond is probably installed
+///    assert_eq!(fsutils::path_exists(output), true);
+/// } else {
+///     // LilyPond is not installed and we will
+///     // not get an output
+///     assert_eq!(fsutils::path_exists(output), false);
+/// }
+///
+/// // Cleanup
+/// fsutils::rm(input);
+/// fsutils::rm(output);
+///
+/// ```
+pub fn compile(input_file: &'static str) -> bool {
     match Command::new("lilypond")
-        .arg("test.ly")
+        .arg(input_file)
         .output() {
         Ok(o) => {
             if o.status.success() {
+                println!("Compiled {}", input_file);
                 io::stdout().write_all(o.stdout.as_ref()).unwrap();
+                true
             } else {
                 io::stdout().write_all(o.stderr.as_ref()).unwrap();
+                false
             }
         }
         Err(e) => {
             println!("Could not run LilyPond. Error: {}", e);
             println!("Install LilyPond at https://lilypond.org/download.html");
+            false
         }
     }
 }
