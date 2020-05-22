@@ -41,24 +41,30 @@ use std::path::Path;
 ///
 /// ```
 pub fn compile(input_file: &'static str) -> bool {
-    match Command::new("lilypond")
-        .arg(input_file)
-        .output() {
-        Ok(o) => {
-            if o.status.success() {
-                println!("Compiled {}", input_file);
-                io::stdout().write_all(o.stdout.as_ref()).unwrap();
-                true
-            } else {
-                io::stdout().write_all(o.stderr.as_ref()).unwrap();
+    if is_lilypond_file(input_file) {
+        match Command::new("lilypond")
+            .arg(input_file)
+            .output() {
+            Ok(o) => {
+                if o.status.success() {
+                    println!("Compiled {}", input_file);
+                    io::stdout().write_all(o.stdout.as_ref()).unwrap();
+                    true
+                } else {
+                    io::stdout().write_all(o.stderr.as_ref()).unwrap();
+                    false
+                }
+            }
+            Err(e) => {
+                println!("Could not run LilyPond. Error: {}", e);
+                println!("Install LilyPond at https://lilypond.org/download.html");
                 false
             }
         }
-        Err(e) => {
-            println!("Could not run LilyPond. Error: {}", e);
-            println!("Install LilyPond at https://lilypond.org/download.html");
-            false
-        }
+    } else {
+        println!("File {} does not exist or is invalid.", input_file);
+        println!("Make sure your file has the .ly extension");
+        false
     }
 }
 
