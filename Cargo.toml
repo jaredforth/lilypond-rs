@@ -1,9 +1,20 @@
 [package]
 name = "lilypond"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["Jared Forth <jaredforthdev@gmail.com>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A Rust wrapper and types for GNU LilyPond"
+homepage = "https://crates.io/crates/lilypond"
+repository = "https://github.com/jaredforth/lilypond"
+license = "GPL-3.0-or-later"
+readme = "README.md"
+documentation = "https://docs.rs/lilypond"
+keywords = ["music", "notation", "typography", "lilypond"]
+categories = ["multimedia"]
+
+[badges]
+travis-ci = { repository = "jaredforth/lilypond" }
+appveyor = { repository = "jaredforth/lilypond" }
 
 [dependencies]

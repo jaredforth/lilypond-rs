@@ -1,3 +1,7 @@
+pub fn lilypond() {
+
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
