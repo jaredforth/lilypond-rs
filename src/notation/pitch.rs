@@ -64,14 +64,35 @@ pub enum Octave {
     S9,
 }
 
+/// Set pitch below middle C as default
+impl Default for Octave {
+    fn default() -> Self { Octave::S3 }
+}
+
 /// Accidentals a natural note can have
 pub enum Accidental {
+    None,
     Sharp,
     Flat
+}
+
+/// Set no accidental as default
+impl Default for Accidental {
+    fn default() -> Self { Accidental::None }
 }
 
 pub struct Pitch {
     note: Note,
     octave: Octave,
     accidental: Accidental
+}
+
+impl Pitch {
+    pub fn new(note: Note) -> Pitch {
+        Pitch {
+            note,
+            octave: Default::default(),
+            accidental: Default::default()
+        }
+    }
 }
