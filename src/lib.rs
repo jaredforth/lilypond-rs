@@ -14,6 +14,8 @@ use std::process::Command;
 use std::io::{self, Write};
 use std::path::Path;
 
+pub mod notation;
+
 /// Compiles a `.ly` source file
 ///
 /// # Usage
