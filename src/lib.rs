@@ -12,6 +12,7 @@
 
 use std::process::Command;
 use std::io::{self, Write};
+use std::path::Path;
 
 /// Compiles a `.ly` source file
 ///
@@ -61,10 +62,38 @@ pub fn compile(input_file: &'static str) -> bool {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+/// Checks if file has `.ly` extension
+///
+/// # Usage:
+///
+/// ```
+/// use lilypond::is_lilypond_file;
+///
+/// let valid = "test.ly";
+/// let invalid = "test.png";
+/// // Create valid file
+/// fsutils::create_file(valid);
+/// // Create invalid file
+/// fsutils::create_file(invalid);
+///
+/// assert_eq!(is_lilypond_file(valid), true);
+/// assert_eq!(is_lilypond_file(invalid), false);
+/// // Will also return false if file does not exist
+/// assert_eq!(is_lilypond_file("does_not_exit.txt"), false);
+///
+/// // Clean up
+/// fsutils::rm(valid);
+/// fsutils::rm(invalid);
+/// ```
+pub fn is_lilypond_file(filename: &'static str) -> bool {
+    match Path::new(filename).extension() {
+        Some(ex) =>  {
+            if ex == "ly" {
+                true
+            } else {
+                false
+            }
+        }
+        None => false
     }
 }
