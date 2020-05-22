@@ -10,8 +10,26 @@
 //! **lilypond** provides an API to ergonomically wrap LilyPond,
 //! and provide Rust types that resolve to LilyPond output.
 
-pub fn lilypond() {
+use std::process::Command;
+use std::io::{self, Write};
 
+/// Compiles a `.ly` source file
+pub fn compile() {
+    match Command::new("lilypond")
+        .arg("test.ly")
+        .output() {
+        Ok(o) => {
+            if o.status.success() {
+                io::stdout().write_all(o.stdout.as_ref()).unwrap();
+            } else {
+                io::stdout().write_all(o.stderr.as_ref()).unwrap();
+            }
+        }
+        Err(e) => {
+            println!("Could not run LilyPond. Error: {}", e);
+            println!("Install LilyPond at https://lilypond.org/download.html");
+        }
+    }
 }
 
 #[cfg(test)]
