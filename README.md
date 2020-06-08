@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/jaredforth/lilypond.svg?token=mH2pScYxqRkBEzpBQAu6&branch=master)](https://travis-ci.com/jaredforth/lilypond)
+[![Build Status](https://travis-ci.com/jaredforth/lilypond-rs.svg?token=mH2pScYxqRkBEzpBQAu6&branch=master)](https://travis-ci.com/jaredforth/lilypond)
 [![Build status](https://ci.appveyor.com/api/projects/status/w75cp0q4qr0hngf8?svg=true)](https://ci.appveyor.com/project/jaredforth/lilypond)
 [![Crate](https://img.shields.io/crates/v/lilypond.svg)](https://crates.io/crates/lilypond)
 [![API](https://docs.rs/lilypond/badge.svg)](https://docs.rs/lilypond)
