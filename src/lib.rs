@@ -10,12 +10,16 @@
 //! **lilypond** provides an API to ergonomically wrap LilyPond,
 //! and provide Rust types that resolve to LilyPond output.
 
+#[macro_use]
+extern crate nom;
+
 use std::process::Command;
 use std::io::{self, Write};
 use std::path::Path;
 use crate::notation::pitch::Note;
 
 pub mod notation;
+pub mod parser;
 
 /// Compiles a `.ly` source file
 ///
@@ -135,9 +139,12 @@ impl LilyPond {
     /// ## Usage:
     ///
     /// ```
+    /// use lilypond::LilyPond;
     ///
+    /// let mut  ly = LilyPond::new();
+    /// let parsed = ly.parse("{c e f}");
     /// ```
     pub fn parse(&mut self, raw: &'static str) {
-
+        println!("{}", raw);
     }
 }

@@ -19,3 +19,4 @@ appveyor = { repository = "jaredforth/lilypond" }
 
 [dependencies]
 fsutils = "0.1.2"
+nom = "5"
