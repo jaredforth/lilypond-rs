@@ -19,4 +19,5 @@ appveyor = { repository = "jaredforth/lilypond" }
 
 [dependencies]
 fsutils = "0.1.2"
-nom = "5"
+regex = "1"
+lazy_static = "1.4.0"

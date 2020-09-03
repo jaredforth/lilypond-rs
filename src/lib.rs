@@ -10,9 +10,6 @@
 //! **lilypond** provides an API to ergonomically wrap LilyPond,
 //! and provide Rust types that resolve to LilyPond output.
 
-#[macro_use]
-extern crate nom;
-
 use std::process::Command;
 use std::io::{self, Write};
 use std::path::Path;

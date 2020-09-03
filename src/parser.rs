@@ -1,12 +1,8 @@
 //! This contains logic for parsing LilyPond
 
-use nom::{
-    IResult,
-    sequence::delimited,
-    // see the "streaming/complete" paragraph lower for an explanation of these submodules
-    character::complete::char,
-    bytes::complete::is_not
-};
+use lazy_static::lazy_static;
+
+use regex::Regex;
 
 /// Gets content between curly brackets
 ///
@@ -15,12 +11,15 @@ use nom::{
 /// ```
 /// use lilypond::parser::curly_brackets;
 ///
-/// let c1 = curly_brackets("{ c e g }").unwrap();
-/// let c2 = curly_brackets("{c e g}").unwrap();
+/// let c1 = curly_brackets("{ c e g }");
 ///
-/// assert_eq!(c1, ("", " c e g "));
-/// assert_eq!(c2, ("", "c e g"));
+/// assert_eq!(c1, Some(" c e g "));
 /// ```
-pub fn curly_brackets(input: &str) -> IResult<&str, &str> {
-    delimited(char('{'), is_not("}"), char('}'))(input)
+pub fn curly_brackets(input: &str) -> Option<&str> {
+    lazy_static! {
+        static ref MU_EXP: Regex = Regex::new(r"\{(?P<music>.*)\}").unwrap();
+    }
+    MU_EXP.captures(input).and_then(|cap| {
+        cap.name("music").map(|login| login.as_str())
+    })
 }
