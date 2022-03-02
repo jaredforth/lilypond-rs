@@ -1,7 +1,6 @@
 //! A single note type
 
-use crate::notation::pitch;
-use crate::notation::pitch::Pitch;
+use crate::notation::pitch::{NoteName, Pitch};
 use crate::notation::rhythm::NoteDuration;
 
 /// A note with rhythm and pitch
@@ -14,18 +13,31 @@ pub struct Note {
 /// TODO also need to create staff, time signature, key signature, chord
 /// before we have a minimum viable product
 impl Note {
-    pub fn new() -> Note {
+    /// Construct a new note
+    ///
+    /// This will take a note name and initialize a note with default octave and
+    /// duration.
+    ///
+    /// # Usage:
+    ///
+    /// ```
+    /// use lilypond::notation::note::Note;
+    /// use lilypond::notation::pitch::{Pitch, NoteName, Accidental, Octave};
+    /// use lilypond::notation::rhythm::{NoteDuration, Length, NoteDurationType};
+    ///
+    /// let note = Note::new(NoteName::A);
+    ///
+    /// assert_eq!(note.pitch.note, NoteName::A);
+    /// assert_eq!(note.pitch.octave, Octave::S3);
+    /// assert_eq!(note.pitch.accidental, Accidental::None);
+    /// assert_eq!(note.rhythm.length, Length::Quarter);
+    /// assert_eq!(note.rhythm.dotted, false);
+    /// assert_eq!(note.rhythm.duration_type, NoteDurationType::Note);
+    /// ```
+    pub fn new(note: NoteName) -> Note {
         Note {
-            pitch: Pitch {
-                note: pitch::NoteName::A,
-                octave: Default::default(),
-                accidental: Default::default(),
-            },
-            rhythm: NoteDuration {
-                length: Default::default(),
-                dotted: false,
-                duration_type: Default::default(),
-            },
+            pitch: Pitch::new(note),
+            rhythm: NoteDuration::new(),
         }
     }
 }
