@@ -13,7 +13,7 @@
 use std::process::Command;
 use std::io::{self, Write};
 use std::path::Path;
-use crate::notation::pitch::Note;
+use crate::notation::pitch::NoteName;
 
 pub mod notation;
 pub mod parser;
@@ -111,7 +111,7 @@ pub fn is_lilypond_file(filename: &'static str) -> bool {
 /// A Rust representation of LilyPond data.
 #[derive(PartialEq, Debug)]
 pub struct LilyPond {
-    pub notes: Vec<Note>
+    pub notes: Vec<NoteName>
 }
 
 impl LilyPond {
