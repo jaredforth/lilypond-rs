@@ -10,7 +10,7 @@
 /// [scientific pitch](https://en.wikipedia.org/wiki/Scientific_pitch_notation)
 /// and [helmholtz pitch](https://en.wikipedia.org/wiki/Helmholtz_pitch_notation).
 #[derive(PartialEq, Debug)]
-pub enum Note {
+pub enum NoteName {
     /// ## A Defaults:
     ///
     /// Scientific: A3
@@ -26,26 +26,26 @@ pub enum Note {
     /// Scientific: C3
     /// Helmholtz: c
     C,
-    /// ## B Defaults:
-    ///
-    /// Scientific: B3
-    /// Helmholtz: b
-    D,
     /// ## D Defaults:
     ///
     /// Scientific: D3
     /// Helmholtz: d
-    E,
+    D,
     /// ## E Defaults:
     ///
     /// Scientific: E3
     /// Helmholtz: e
-    F,
+    E,
     /// ## F Defaults:
     ///
     /// Scientific: F3
     /// Helmholtz: f
-    G
+    F,
+    /// ## G Defaults:
+    ///
+    /// Scientific: G3
+    /// Helmholtz: g
+    G,
 }
 
 /// Octaves a pitch can have
@@ -68,7 +68,9 @@ pub enum Octave {
 
 /// Set pitch below middle C as default
 impl Default for Octave {
-    fn default() -> Self { Octave::S3 }
+    fn default() -> Self {
+        Octave::S3
+    }
 }
 
 /// Accidentals a natural note can have
@@ -76,12 +78,14 @@ impl Default for Octave {
 pub enum Accidental {
     None,
     Sharp,
-    Flat
+    Flat,
 }
 
 /// Set no accidental as default
 impl Default for Accidental {
-    fn default() -> Self { Accidental::None }
+    fn default() -> Self {
+        Accidental::None
+    }
 }
 
 /// A single pitch
@@ -90,7 +94,7 @@ pub struct Pitch {
     /// The note letter name
     ///
     /// e.g. C, E, or G
-    pub note: Note,
+    pub note: NoteName,
     /// Octave value in scientific
     /// pitch notation.
     ///
@@ -99,7 +103,7 @@ pub struct Pitch {
     /// Accidental value
     ///
     /// e.g. None, # or b
-    pub accidental: Accidental
+    pub accidental: Accidental,
 }
 
 impl Pitch {
@@ -111,19 +115,19 @@ impl Pitch {
     /// # Usage:
     ///
     /// ```
-    /// use lilypond::notation::pitch::{Pitch, Note, Accidental, Octave};
+    /// use lilypond::notation::pitch::{Pitch, NoteName, Accidental, Octave};
     ///
-    /// let pitch = Pitch::new(Note::A);
+    /// let pitch = Pitch::new(NoteName::A);
     ///
-    /// assert_eq!(pitch.note, Note::A);
+    /// assert_eq!(pitch.note, NoteName::A);
     /// assert_eq!(pitch.octave, Octave::S3);
     /// assert_eq!(pitch.accidental, Accidental::None);
     /// ```
-    pub fn new(note: Note) -> Pitch {
+    pub fn new(note: NoteName) -> Pitch {
         Pitch {
             note,
             octave: Default::default(),
-            accidental: Default::default()
+            accidental: Default::default(),
         }
     }
     /// Set absolute octave value for a pitch
@@ -131,9 +135,9 @@ impl Pitch {
     /// # Usage:
     ///
     /// ```
-    /// use lilypond::notation::pitch::{Pitch, Note, Octave};
+    /// use lilypond::notation::pitch::{Pitch, NoteName, Octave};
     ///
-    /// let mut  pitch = Pitch::new(Note::A);
+    /// let mut  pitch = Pitch::new(NoteName::A);
     /// pitch.octave(Octave::S6);
     ///
     /// assert_eq!(Octave::S6, pitch.octave)
@@ -146,9 +150,9 @@ impl Pitch {
     /// # Usage:
     ///
     /// ```
-    /// use lilypond::notation::pitch::{Pitch, Note, Octave, Accidental};
+    /// use lilypond::notation::pitch::{Pitch, NoteName, Octave, Accidental};
     ///
-    /// let mut  pitch = Pitch::new(Note::A);
+    /// let mut  pitch = Pitch::new(NoteName::A);
     /// pitch.accidental(Accidental::Sharp);
     ///
     /// assert_eq!(Accidental::Sharp, pitch.accidental)
@@ -161,9 +165,9 @@ impl Pitch {
     /// # Usage:
     ///
     /// ```
-    /// use lilypond::notation::pitch::{Pitch, Note, Octave, Accidental};
+    /// use lilypond::notation::pitch::{Pitch, NoteName, Octave, Accidental};
     ///
-    /// let mut  pitch = Pitch::new(Note::A);
+    /// let mut  pitch = Pitch::new(NoteName::A);
     /// pitch.sharpen();
     ///
     /// assert_eq!(Accidental::Sharp, pitch.accidental)
@@ -176,9 +180,9 @@ impl Pitch {
     /// # Usage:
     ///
     /// ```
-    /// use lilypond::notation::pitch::{Pitch, Note, Octave, Accidental};
+    /// use lilypond::notation::pitch::{Pitch, NoteName, Octave, Accidental};
     ///
-    /// let mut  pitch = Pitch::new(Note::A);
+    /// let mut  pitch = Pitch::new(NoteName::A);
     /// pitch.flatten();
     ///
     /// assert_eq!(Accidental::Flat, pitch.accidental)

@@ -10,22 +10,26 @@ pub enum Length {
     Sixteenth,
     ThirtySecond,
     SixtyFourth,
-    OneTwentyEighth
+    OneTwentyEighth,
 }
 
 impl Default for Length {
-    fn default() -> Self { Length::Quarter }
+    fn default() -> Self {
+        Length::Quarter
+    }
 }
 
 /// Type of duration
 #[derive(PartialEq, Debug)]
 pub enum NoteDurationType {
     Note,
-    Rest
+    Rest,
 }
 
 impl Default for NoteDurationType {
-    fn default() -> Self { NoteDurationType::Note }
+    fn default() -> Self {
+        NoteDurationType::Note
+    }
 }
 
 /// A duration for a note
@@ -36,7 +40,7 @@ pub struct NoteDuration {
     /// Whether or not the note is dotted
     pub dotted: bool,
     /// The duration type (Note or Rest)
-    pub duration_type: NoteDurationType
+    pub duration_type: NoteDurationType,
 }
 
 impl NoteDuration {
@@ -59,7 +63,7 @@ impl NoteDuration {
         NoteDuration {
             length: Default::default(),
             dotted: false,
-            duration_type: Default::default()
+            duration_type: Default::default(),
         }
     }
     /// Set length for a duration
