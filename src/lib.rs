@@ -13,6 +13,10 @@
 use std::process::Command;
 use std::io::{self, Write};
 use std::path::Path;
+use crate::notation::pitch::NoteName;
+
+pub mod notation;
+pub mod parser;
 
 /// Compiles a `.ly` source file
 ///
@@ -101,5 +105,43 @@ pub fn is_lilypond_file(filename: &'static str) -> bool {
             }
         }
         None => false
+    }
+}
+
+/// A Rust representation of LilyPond data.
+#[derive(PartialEq, Debug)]
+pub struct LilyPond {
+    pub notes: Vec<NoteName>
+}
+
+impl LilyPond {
+    /// Creates new instance of `LilyPond` struct
+    ///
+    /// ## Usage:
+    ///
+    /// ```
+    /// use lilypond::LilyPond;
+    ///
+    /// let ly = LilyPond::new();
+    ///
+    /// assert_eq!(ly, LilyPond {notes: vec![]})
+    /// ```
+    pub fn new() -> LilyPond {
+        LilyPond {
+            notes: vec![]
+        }
+    }
+    /// Parses LilyPond input as a string into the data structure.
+    ///
+    /// ## Usage:
+    ///
+    /// ```
+    /// use lilypond::LilyPond;
+    ///
+    /// let mut  ly = LilyPond::new();
+    /// let parsed = ly.parse("{c e f}");
+    /// ```
+    pub fn parse(&mut self, raw: &'static str) {
+        println!("{}", raw);
     }
 }
