@@ -74,7 +74,7 @@ impl NoteDuration {
     ///
     /// use lilypond::notation::rhythm::{NoteDuration, Length};
     ///
-    /// let mut  duration = NoteDuration::new();
+    /// let mut duration = NoteDuration::new();
     /// duration.length(Length::Sixteenth);
     ///
     /// assert_eq!(Length::Sixteenth, duration.length)
