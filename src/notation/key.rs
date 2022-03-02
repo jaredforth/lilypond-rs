@@ -81,6 +81,19 @@ mod tests {
         assert_eq!(key.key, super::Key::None);
     }
     #[test]
+    fn test_check_num_accidentals() {
+        // Test if check_num_accidentals() returns proper value
+        let num_accidentals = super::check_num_accidentals(2);
+        assert_eq!(num_accidentals, 2);
+    }
+    #[test]
+    #[should_panic]
+    fn test_check_num_accidentals_panic() {
+        // Test if check_num_accidentals() panics with improper input
+        #[allow(unused_variables)]
+        let num_accidentals = super::check_num_accidentals(9);
+    }
+    #[test]
     fn test_set_key() {
         let mut key = super::KeySignature::new();
         key.set_key(super::Key::Sharps(2));
