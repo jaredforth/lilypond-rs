@@ -10,10 +10,10 @@
 //! **lilypond** provides an API to ergonomically wrap LilyPond,
 //! and provide Rust types that resolve to LilyPond output.
 
-use std::process::Command;
+use crate::notation::pitch::NoteName;
 use std::io::{self, Write};
 use std::path::Path;
-use crate::notation::pitch::NoteName;
+use std::process::Command;
 
 pub mod notation;
 pub mod parser;
@@ -46,9 +46,7 @@ pub mod parser;
 /// ```
 pub fn compile(input_file: &'static str) -> bool {
     if is_lilypond_file(input_file) {
-        match Command::new("lilypond")
-            .arg(input_file)
-            .output() {
+        match Command::new("lilypond").arg(input_file).output() {
             Ok(o) => {
                 if o.status.success() {
                     println!("Compiled {}", input_file);
@@ -97,21 +95,21 @@ pub fn compile(input_file: &'static str) -> bool {
 /// ```
 pub fn is_lilypond_file(filename: &'static str) -> bool {
     match Path::new(filename).extension() {
-        Some(ex) =>  {
+        Some(ex) => {
             if ex == "ly" {
                 true
             } else {
                 false
             }
         }
-        None => false
+        None => false,
     }
 }
 
 /// A Rust representation of LilyPond data.
 #[derive(PartialEq, Debug)]
 pub struct LilyPond {
-    pub notes: Vec<NoteName>
+    pub notes: Vec<NoteName>,
 }
 
 impl LilyPond {
@@ -127,9 +125,7 @@ impl LilyPond {
     /// assert_eq!(ly, LilyPond {notes: vec![]})
     /// ```
     pub fn new() -> LilyPond {
-        LilyPond {
-            notes: vec![]
-        }
+        LilyPond { notes: vec![] }
     }
     /// Parses LilyPond input as a string into the data structure.
     ///
