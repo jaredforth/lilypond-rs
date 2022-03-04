@@ -46,6 +46,8 @@ pub enum NoteName {
     /// Scientific: G3
     /// Helmholtz: g
     G,
+    /// For rests
+    None,
 }
 
 /// Octaves a pitch can have
@@ -64,6 +66,7 @@ pub enum Octave {
     S7,
     S8,
     S9,
+    None,
 }
 
 /// Set pitch below middle C as default
