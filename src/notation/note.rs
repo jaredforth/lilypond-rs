@@ -5,6 +5,7 @@ use crate::notation::pitch::{Accidental, NoteName, Octave, Pitch};
 use crate::notation::rhythm::{Length, NoteDuration, NoteDurationType};
 
 /// A note with rhythm and pitch
+#[derive(Debug, PartialEq)]
 pub struct Note {
     pub pitch: Pitch,
     pub rhythm: NoteDuration,
@@ -153,4 +154,40 @@ impl Note {
         ly_note.to_note()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::notation::note::Note;
+    use crate::notation::pitch::NoteName;
+    // use crate::notation::rhythm::{Length, NoteDuration, NoteDurationType};
+    #[test]
+    fn test_get_lilypond_note_name() {
+        let note = Note::new(NoteName::A);
+        let lilypond_note_name = note.get_lilypond_note_name();
+        assert_eq!("a", lilypond_note_name);
+    }
+    #[test]
+    fn test_get_lilypond_accidental() {
+        let note = Note::new(NoteName::A);
+        let lilypond_accidental = note.get_lilypond_accidental();
+        assert_eq!("", lilypond_accidental);
+    }
+    #[test]
+    fn test_get_lilypond_octave() {
+        let note = Note::new(NoteName::A);
+        let lilypond_octave = note.get_lilypond_octave();
+        assert_eq!("", lilypond_octave);
+    }
+    #[test]
+    fn test_get_lilypond_duration() {
+        let note = Note::new(NoteName::A);
+        let lilypond_duration = note.get_lilypond_duration();
+        assert_eq!("4", lilypond_duration);
+    }
+    #[test]
+    fn test_get_lilypond_dot() {
+        let note = Note::new(NoteName::A);
+        let lilypond_dot = note.get_lilypond_dot();
+        assert_eq!("", lilypond_dot);
+    }
 }
