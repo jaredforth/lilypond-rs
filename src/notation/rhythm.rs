@@ -21,79 +21,79 @@ impl Default for Length {
 
 /// Type of duration
 #[derive(PartialEq, Debug)]
-pub enum NoteDurationType {
+pub enum DurationType {
     Note,
     Rest,
 }
 
-impl Default for NoteDurationType {
+impl Default for DurationType {
     fn default() -> Self {
-        NoteDurationType::Note
+        DurationType::Note
     }
 }
 
 /// A duration for a note
 #[derive(PartialEq, Debug)]
-pub struct NoteDuration {
+pub struct Rhythm {
     /// Length e.g. Quarter, Half, or Whole
     pub length: Length,
     /// Whether or not the note is dotted
     pub dotted: bool,
     /// The duration type (Note or Rest)
-    pub duration_type: NoteDurationType,
+    pub duration_type: DurationType,
 }
 
-impl NoteDuration {
-    /// Construct a new duration
+impl Rhythm {
+    /// Construct a new rhythm
     ///
     /// This will initialize with default values.
     ///
     /// # Usage:
     ///
     /// ```
-    /// use lilypond::notation::rhythm::{NoteDuration, Length, NoteDurationType};
+    /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
     ///
-    /// let duration = NoteDuration::new();
+    /// let rhythm = Rhythm::new();
     ///
-    /// assert_eq!(duration.length, Length::Quarter);
-    /// assert_eq!(duration.dotted, false);
-    /// assert_eq!(duration.duration_type, NoteDurationType::Note);
+    /// assert_eq!(rhythm.length, Length::Quarter);
+    /// assert_eq!(rhythm.dotted, false);
+    /// assert_eq!(rhythm.duration_type, DurationType::Note);
     /// ```
-    pub fn new() -> NoteDuration {
-        NoteDuration {
+    pub fn new() -> Rhythm {
+        Rhythm {
             length: Default::default(),
             dotted: false,
             duration_type: Default::default(),
         }
     }
-    /// Set length for a duration
+    /// Set length for a rhythm
     ///
     /// # Usage:
     ///
     /// ```
     ///
-    /// use lilypond::notation::rhythm::{NoteDuration, Length};
+    /// use lilypond::notation::rhythm::{Rhythm, Length};
     ///
-    /// let mut  duration = NoteDuration::new();
-    /// duration.length(Length::Sixteenth);
+    /// let mut rhythm = Rhythm::new();
+    /// rhythm.length(Length::Sixteenth);
     ///
-    /// assert_eq!(Length::Sixteenth, duration.length)
+    /// assert_eq!(Length::Sixteenth, rhythm.length);
     /// ```
     pub fn length(&mut self, length: Length) {
         self.length = length;
     }
-    /// Set whether or not a duration is dotted
+    /// Set whether or not a rhythm is dotted
     ///
     /// # Usage:
     ///
     /// ```
     ///
-    /// use lilypond::notation::rhythm::NoteDuration;
+    /// use lilypond::notation::rhythm::Rhythm;
     ///
-    /// let mut  duration = NoteDuration::new();
-    /// duration.dotted(true);
+    /// let mut rhythm = Rhythm::new();
+    /// rhythm.dotted(true);
     ///
-    /// assert_eq!(true, duration.dotted)
+    /// assert_eq!(true, rhythm.dotted);
     /// ```
     pub fn dotted(&mut self, is_dotted: bool) {
         self.dotted = is_dotted;
@@ -103,15 +103,44 @@ impl NoteDuration {
     /// # Usage:
     ///
     /// ```
+    /// use lilypond::notation::rhythm::{Rhythm, DurationType};
     ///
-    /// use lilypond::notation::rhythm::{NoteDuration, NoteDurationType};
+    /// let mut rhythm = Rhythm::new();
+    /// rhythm.duration_type(DurationType::Rest);
     ///
-    /// let mut  duration = NoteDuration::new();
-    /// duration.duration_type(NoteDurationType::Rest);
-    ///
-    /// assert_eq!(NoteDurationType::Rest, duration.duration_type)
+    /// assert_eq!(DurationType::Rest, rhythm.duration_type);
     /// ```
-    pub fn duration_type(&mut self, duration_type: NoteDurationType) {
+    pub fn duration_type(&mut self, duration_type: DurationType) {
         self.duration_type = duration_type;
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::notation::rhythm::*;
+    #[test]
+    fn test_new() {
+        let rhythm = Rhythm::new();
+        assert_eq!(rhythm.length, Length::Quarter);
+        assert_eq!(rhythm.dotted, false);
+        assert_eq!(rhythm.duration_type, DurationType::Note);
+    }
+    #[test]
+    fn test_length() {
+        let mut rhythm = Rhythm::new();
+        rhythm.length(Length::Sixteenth);
+        assert_eq!(Length::Sixteenth, rhythm.length);
+    }
+    #[test]
+    fn test_dotted() {
+        let mut rhythm = Rhythm::new();
+        rhythm.dotted(true);
+        assert!(rhythm.dotted);
+    }
+    #[test]
+    fn test_duration_type() {
+        let mut rhythm = Rhythm::new();
+        rhythm.duration_type(DurationType::Rest);
+        assert_eq!(rhythm.duration_type, DurationType::Rest);
     }
 }

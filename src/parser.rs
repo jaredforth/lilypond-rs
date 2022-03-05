@@ -19,7 +19,7 @@ pub fn curly_brackets(input: &str) -> Option<&str> {
     lazy_static! {
         static ref MU_EXP: Regex = Regex::new(r"\{(?P<music>.*)\}").unwrap();
     }
-    MU_EXP.captures(input).and_then(|cap| {
-        cap.name("music").map(|login| login.as_str())
-    })
+    MU_EXP
+        .captures(input)
+        .and_then(|cap| cap.name("music").map(|login| login.as_str()))
 }
