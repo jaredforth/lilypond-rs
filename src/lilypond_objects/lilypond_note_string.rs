@@ -1,6 +1,6 @@
 use crate::notation::note::Note;
 use crate::notation::pitch::{Accidental, NoteName, Octave};
-use crate::notation::rhythm::{Length, NoteDurationType};
+use crate::notation::rhythm::{DurationType, Length};
 use regex::Regex;
 
 // pub struct LilypondNoteString(pub String);
@@ -55,16 +55,16 @@ impl LilypondNoteString {
     pub fn from_note(note: Note) -> LilypondNoteString {
         note.to_lilypond_note_string()
     }
-    fn get_duration_type(&self) -> NoteDurationType {
+    fn get_duration_type(&self) -> DurationType {
         match &self.name[0..1] {
-            "r" => NoteDurationType::Rest,
-            _ => NoteDurationType::Note,
+            "r" => DurationType::Rest,
+            _ => DurationType::Note,
         }
     }
     fn get_note_name(&self) -> NoteName {
         match self.get_duration_type() {
-            NoteDurationType::Rest => NoteName::None,
-            NoteDurationType::Note => match &self.name[0..1] {
+            DurationType::Rest => NoteName::None,
+            DurationType::Note => match &self.name[0..1] {
                 "a" => NoteName::A,
                 "b" => NoteName::B,
                 "c" => NoteName::C,
@@ -78,8 +78,8 @@ impl LilypondNoteString {
     }
     fn get_accidental(&self) -> Accidental {
         match self.get_duration_type() {
-            NoteDurationType::Rest => Accidental::None,
-            NoteDurationType::Note => {
+            DurationType::Rest => Accidental::None,
+            DurationType::Note => {
                 // Must exclude first character, note names can have f in them
                 let note_without_name = &self.name[1..];
                 if note_without_name.contains("s") {
@@ -95,8 +95,8 @@ impl LilypondNoteString {
     fn get_octave(&self) -> Octave {
         let ly_note = &self.name;
         match self.get_duration_type() {
-            NoteDurationType::Rest => Octave::None,
-            NoteDurationType::Note => {
+            DurationType::Rest => Octave::None,
+            DurationType::Note => {
                 // octave has to be usize to add count() results from it
                 let mut octave: usize = 3;
                 if ly_note.contains(",") && ly_note.contains("'") {
@@ -160,16 +160,16 @@ impl LilypondNoteString {
     /// use lilypond::lilypond_objects::lilypond_note_string::LilypondNoteString;
     /// use lilypond::notation::note::Note;
     /// use lilypond::notation::pitch::{Pitch, NoteName, Accidental, Octave};
-    /// use lilypond::notation::rhythm::{NoteDuration, Length, NoteDurationType};
+    /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
     ///
     /// let note = LilypondNoteString::new("af,8.").to_note();
     ///
-    /// assert_eq!(note.pitch.note, NoteName::A);
+    /// assert_eq!(note.pitch.note_name, NoteName::A);
     /// assert_eq!(note.pitch.octave, Octave::S2);
     /// assert_eq!(note.pitch.accidental, Accidental::Flat);
     /// assert_eq!(note.rhythm.length, Length::Eighth);
     /// assert_eq!(note.rhythm.dotted, true);
-    /// assert_eq!(note.rhythm.duration_type, NoteDurationType::Note);
+    /// assert_eq!(note.rhythm.duration_type, DurationType::Note);
     /// ```
     pub fn to_note(&self) -> Note {
         let note_name = self.get_note_name();
@@ -195,7 +195,7 @@ mod test {
     use crate::lilypond_objects::lilypond_note_string::LilypondNoteString;
     use crate::notation::note::Note;
     use crate::notation::pitch::{Accidental, NoteName, Octave, Pitch};
-    use crate::notation::rhythm::{Length, NoteDuration, NoteDurationType};
+    use crate::notation::rhythm::{DurationType, Length, Rhythm};
     fn test_lilypond_note_string(ly_str: &str) {
         let note = LilypondNoteString::new(ly_str).name;
         assert_eq!(ly_str, note);
@@ -247,10 +247,10 @@ mod test {
     fn test_get_duration_type() {
         let ly_note = LilypondNoteString::new("r8");
         let duration_type = ly_note.get_duration_type();
-        assert_eq!(duration_type, NoteDurationType::Rest);
+        assert_eq!(duration_type, DurationType::Rest);
         let ly_note = LilypondNoteString::new("f8");
         let duration_type = ly_note.get_duration_type();
-        assert_eq!(duration_type, NoteDurationType::Note);
+        assert_eq!(duration_type, DurationType::Note);
     }
     #[test]
     fn test_get_note_name() {
@@ -312,13 +312,13 @@ mod test {
         let ly_note = LilypondNoteString::new("r8.");
         let test_note = Note {
             pitch: Pitch {
-                note: NoteName::None,
+                note_name: NoteName::None,
                 octave: Octave::None,
                 accidental: Accidental::None,
             },
-            rhythm: NoteDuration {
+            rhythm: Rhythm {
                 length: Length::Eighth,
-                duration_type: NoteDurationType::Rest,
+                duration_type: DurationType::Rest,
                 dotted: true,
             },
         };
@@ -326,13 +326,13 @@ mod test {
         let ly_note = LilypondNoteString::new("ef,,,64");
         let test_note = Note {
             pitch: Pitch {
-                note: NoteName::E,
+                note_name: NoteName::E,
                 octave: Octave::S0,
                 accidental: Accidental::Flat,
             },
-            rhythm: NoteDuration {
+            rhythm: Rhythm {
                 length: Length::SixtyFourth,
-                duration_type: NoteDurationType::Note,
+                duration_type: DurationType::Note,
                 dotted: false,
             },
         };

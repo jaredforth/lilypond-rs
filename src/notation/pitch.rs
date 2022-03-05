@@ -97,7 +97,7 @@ pub struct Pitch {
     /// The note letter name
     ///
     /// e.g. C, E, or G
-    pub note: NoteName,
+    pub note_name: NoteName,
     /// Octave value in scientific
     /// pitch notation.
     ///
@@ -122,13 +122,13 @@ impl Pitch {
     ///
     /// let pitch = Pitch::new(NoteName::A);
     ///
-    /// assert_eq!(pitch.note, NoteName::A);
+    /// assert_eq!(pitch.note_name, NoteName::A);
     /// assert_eq!(pitch.octave, Octave::S3);
     /// assert_eq!(pitch.accidental, Accidental::None);
     /// ```
     pub fn new(note: NoteName) -> Pitch {
         Pitch {
-            note,
+            note_name: note,
             octave: Default::default(),
             accidental: Default::default(),
         }
