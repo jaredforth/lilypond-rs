@@ -3,25 +3,25 @@ use crate::notation::pitch::{Accidental, NoteName, Octave};
 use crate::notation::rhythm::{DurationType, Length};
 use regex::Regex;
 
-// pub struct LilypondNoteString(pub String);
+// pub struct LilypondNote(pub String);
 #[derive(Debug)]
-pub struct LilypondNoteString {
+pub struct LilypondNote {
     pub name: String,
 }
 
-impl LilypondNoteString {
+impl LilypondNote {
     /// Initialize a lilypond note string, checking for proper formatting
     ///
     /// # Usage
     ///
     /// ```
-    /// use lilypond::lilypond_objects::lilypond_note_string::LilypondNoteString;
+    /// use lilypond::lilypond_objects::lilypond_note::LilypondNote;
     ///
-    /// let ly_note = LilypondNoteString::new("a4");
+    /// let ly_note = LilypondNote::new("a4");
     ///
     /// assert_eq!(ly_note.name, "a4");
     /// ```
-    pub fn new(note: &str) -> LilypondNoteString {
+    pub fn new(note: &str) -> LilypondNote {
         let re = Regex::new(
             r"(?x-u) # Flags: x = whitespace allowed, -u = no unicode support
             ^[a-gr] # note name or rest
@@ -33,7 +33,7 @@ impl LilypondNoteString {
         )
         .unwrap();
         if re.is_match(note) {
-            LilypondNoteString {
+            LilypondNote {
                 name: note.to_string(),
             }
         } else {
@@ -45,15 +45,15 @@ impl LilypondNoteString {
     /// # Usage
     ///
     /// ```
-    /// use lilypond::lilypond_objects::lilypond_note_string::LilypondNoteString;
+    /// use lilypond::lilypond_objects::lilypond_note::LilypondNote;
     /// use lilypond::notation::note::Note;
     /// use lilypond::notation::pitch::NoteName;
     ///
-    /// let ly_note = Note::new(NoteName::A).to_lilypond_note_string();
+    /// let ly_note = Note::new(NoteName::A).to_lilypond_note();
     /// assert_eq!(ly_note.name, "a4");
     /// ```
-    pub fn from_note(note: Note) -> LilypondNoteString {
-        note.to_lilypond_note_string()
+    pub fn from_note(note: Note) -> LilypondNote {
+        note.to_lilypond_note()
     }
     fn get_duration_type(&self) -> DurationType {
         match &self.name[0..1] {
@@ -157,12 +157,12 @@ impl LilypondNoteString {
     /// # Usage:
     ///
     /// ```
-    /// use lilypond::lilypond_objects::lilypond_note_string::LilypondNoteString;
+    /// use lilypond::lilypond_objects::lilypond_note::LilypondNote;
     /// use lilypond::notation::note::Note;
     /// use lilypond::notation::pitch::{Pitch, NoteName, Accidental, Octave};
     /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
     ///
-    /// let note = LilypondNoteString::new("af,8.").to_note();
+    /// let note = LilypondNote::new("af,8.").to_note();
     ///
     /// assert_eq!(note.pitch.note_name, NoteName::A);
     /// assert_eq!(note.pitch.octave, Octave::S2);
@@ -192,16 +192,16 @@ impl LilypondNoteString {
 
 #[cfg(test)]
 mod test {
-    use crate::lilypond_objects::lilypond_note_string::LilypondNoteString;
+    use crate::lilypond_objects::lilypond_note::LilypondNote;
     use crate::notation::note::Note;
     use crate::notation::pitch::{Accidental, NoteName, Octave, Pitch};
     use crate::notation::rhythm::{DurationType, Length, Rhythm};
-    fn test_lilypond_note_string(ly_str: &str) {
-        let note = LilypondNoteString::new(ly_str).name;
+    fn test_lilypond_note(ly_str: &str) {
+        let note = LilypondNote::new(ly_str).name;
         assert_eq!(ly_str, note);
     }
     #[test]
-    fn test_new_lilypond_note_string() {
+    fn test_new_lilypond_note() {
         // Testing a bunch of possible lilypond notes
         let ly_notes = [
             "r",
@@ -228,88 +228,88 @@ mod test {
             "gs''''''16.",
         ];
         for n in ly_notes {
-            test_lilypond_note_string(n);
+            test_lilypond_note(n);
         }
     }
     #[test]
     #[should_panic]
     #[allow(unused_variables)]
-    fn test_new_lilypond_note_string_panic() {
-        let note = LilypondNoteString::new("asdf");
+    fn test_new_lilypond_note_panic() {
+        let note = LilypondNote::new("asdf");
     }
     #[test]
     fn test_from_note() {
         let note = Note::new(NoteName::A);
-        let ly_note = LilypondNoteString::from_note(note).name;
+        let ly_note = LilypondNote::from_note(note).name;
         assert_eq!("a4", ly_note);
     }
     #[test]
     fn test_get_duration_type() {
-        let ly_note = LilypondNoteString::new("r8");
+        let ly_note = LilypondNote::new("r8");
         let duration_type = ly_note.get_duration_type();
         assert_eq!(duration_type, DurationType::Rest);
-        let ly_note = LilypondNoteString::new("f8");
+        let ly_note = LilypondNote::new("f8");
         let duration_type = ly_note.get_duration_type();
         assert_eq!(duration_type, DurationType::Note);
     }
     #[test]
     fn test_get_note_name() {
-        let ly_note = LilypondNoteString::new("r8");
+        let ly_note = LilypondNote::new("r8");
         let duration_type = ly_note.get_note_name();
         assert_eq!(duration_type, NoteName::None);
-        let ly_note = LilypondNoteString::new("f8");
+        let ly_note = LilypondNote::new("f8");
         let duration_type = ly_note.get_note_name();
         assert_eq!(duration_type, NoteName::F);
     }
     #[test]
     fn test_get_accidental() {
-        let ly_note = LilypondNoteString::new("r8");
+        let ly_note = LilypondNote::new("r8");
         let accidental_type = ly_note.get_accidental();
         assert_eq!(accidental_type, Accidental::None);
-        let ly_note = LilypondNoteString::new("fs");
+        let ly_note = LilypondNote::new("fs");
         let accidental_type = ly_note.get_accidental();
         assert_eq!(accidental_type, Accidental::Sharp);
-        let ly_note = LilypondNoteString::new("ef");
+        let ly_note = LilypondNote::new("ef");
         let accidental_type = ly_note.get_accidental();
         assert_eq!(accidental_type, Accidental::Flat);
     }
     #[test]
     fn test_get_octave() {
-        let ly_note = LilypondNoteString::new("r8");
+        let ly_note = LilypondNote::new("r8");
         let octave = ly_note.get_octave();
         assert_eq!(octave, Octave::None);
-        let ly_note = LilypondNoteString::new("fs,,,");
+        let ly_note = LilypondNote::new("fs,,,");
         let octave = ly_note.get_octave();
         assert_eq!(octave, Octave::S0);
-        let ly_note = LilypondNoteString::new("ef");
+        let ly_note = LilypondNote::new("ef");
         let octave = ly_note.get_octave();
         assert_eq!(octave, Octave::S3);
-        let ly_note = LilypondNoteString::new("d''''''");
+        let ly_note = LilypondNote::new("d''''''");
         let octave = ly_note.get_octave();
         assert_eq!(octave, Octave::S9);
     }
     #[test]
     fn test_get_length() {
-        let ly_note = LilypondNoteString::new("r8");
+        let ly_note = LilypondNote::new("r8");
         let length = ly_note.get_length();
         assert_eq!(length, Length::Eighth);
-        let ly_note = LilypondNoteString::new("as,128");
+        let ly_note = LilypondNote::new("as,128");
         let length = ly_note.get_length();
         assert_eq!(length, Length::OneTwentyEighth);
-        let ly_note = LilypondNoteString::new("bf''''64");
+        let ly_note = LilypondNote::new("bf''''64");
         let length = ly_note.get_length();
         assert_eq!(length, Length::SixtyFourth);
     }
     #[test]
     fn get_dot() {
-        let ly_note = LilypondNoteString::new("r8.");
+        let ly_note = LilypondNote::new("r8.");
         assert!(ly_note.get_dot());
-        let ly_note = LilypondNoteString::new("r8");
+        let ly_note = LilypondNote::new("r8");
         assert!(!ly_note.get_dot());
     }
     #[test]
     fn test_to_note() {
-        let ly_note = LilypondNoteString::new("r8.");
+        let ly_note = LilypondNote::new("r8.");
         let test_note = Note {
             pitch: Pitch {
                 note_name: NoteName::None,
@@ -323,7 +323,7 @@ mod test {
             },
         };
         assert_eq!(ly_note.to_note(), test_note);
-        let ly_note = LilypondNoteString::new("ef,,,64");
+        let ly_note = LilypondNote::new("ef,,,64");
         let test_note = Note {
             pitch: Pitch {
                 note_name: NoteName::E,

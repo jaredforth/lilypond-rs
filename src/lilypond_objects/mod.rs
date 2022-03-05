@@ -1,1 +1,1 @@
-pub mod lilypond_note_string;
+pub mod lilypond_note;
