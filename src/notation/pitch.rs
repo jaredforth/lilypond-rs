@@ -194,3 +194,39 @@ impl Pitch {
         self.accidental = Accidental::Flat
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::notation::pitch::*;
+    #[test]
+    fn test_new() {
+        let pitch = Pitch::new(NoteName::A);
+        assert_eq!(pitch.note_name, NoteName::A);
+        assert_eq!(pitch.octave, Octave::S3);
+        assert_eq!(pitch.accidental, Accidental::None);
+    }
+    #[test]
+    fn test_octave() {
+        let mut pitch = Pitch::new(NoteName::A);
+        pitch.octave(Octave::S9);
+        assert_eq!(pitch.octave, Octave::S9);
+    }
+    #[test]
+    fn test_accidental() {
+        let mut pitch = Pitch::new(NoteName::A);
+        pitch.accidental(Accidental::Flat);
+        assert_eq!(pitch.accidental, Accidental::Flat);
+    }
+    #[test]
+    fn test_flatten() {
+        let mut pitch = Pitch::new(NoteName::A);
+        pitch.flatten();
+        assert_eq!(pitch.accidental, Accidental::Flat);
+    }
+    #[test]
+    fn test_sharpen() {
+        let mut pitch = Pitch::new(NoteName::A);
+        pitch.sharpen();
+        assert_eq!(pitch.accidental, Accidental::Sharp);
+    }
+}

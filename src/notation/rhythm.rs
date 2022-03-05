@@ -114,3 +114,33 @@ impl Rhythm {
         self.duration_type = duration_type;
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::notation::rhythm::*;
+    #[test]
+    fn test_new() {
+        let rhythm = Rhythm::new();
+        assert_eq!(rhythm.length, Length::Quarter);
+        assert_eq!(rhythm.dotted, false);
+        assert_eq!(rhythm.duration_type, DurationType::Note);
+    }
+    #[test]
+    fn test_length() {
+        let mut rhythm = Rhythm::new();
+        rhythm.length(Length::Sixteenth);
+        assert_eq!(Length::Sixteenth, rhythm.length);
+    }
+    #[test]
+    fn test_dotted() {
+        let mut rhythm = Rhythm::new();
+        rhythm.dotted(true);
+        assert!(rhythm.dotted);
+    }
+    #[test]
+    fn test_duration_type() {
+        let mut rhythm = Rhythm::new();
+        rhythm.duration_type(DurationType::Rest);
+        assert_eq!(rhythm.duration_type, DurationType::Rest);
+    }
+}

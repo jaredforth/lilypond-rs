@@ -72,5 +72,26 @@ impl TimeSignature {
         self.denominator = denominator;
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::notation::time::TimeSignature;
+    #[test]
+    fn test_new() {
+        let time_signature = TimeSignature::new();
+        assert_eq!(time_signature.numerator, 4);
+        assert_eq!(time_signature.denominator, 4);
+    }
+    #[test]
+    fn test_numerator() {
+        let mut time_signature = TimeSignature::new();
+        time_signature.numerator(7);
+        assert_eq!(time_signature.numerator, 7);
+    }
+    #[test]
+    fn test_denominator() {
+        let mut time_signature = TimeSignature::new();
+        time_signature.denominator(8);
+        assert_eq!(time_signature.denominator, 8);
     }
 }

@@ -191,4 +191,21 @@ mod tests {
         let lilypond_dot = note.get_lilypond_dot();
         assert_eq!("", lilypond_dot);
     }
+    #[test]
+    fn test_to_lilypond_note_string() {
+        let note = Note::new(NoteName::A);
+        let ly_note = note.to_lilypond_note_string();
+        assert_eq!(ly_note.name, "a4");
+    }
+    #[test]
+    fn test_from_lilypond_note_string() {
+        let ly_note = LilypondNoteString::new("a4");
+        let note = Note::from_lilypond_note_string(ly_note);
+        assert_eq!(note.pitch.note_name, NoteName::A);
+        assert_eq!(note.pitch.octave, Octave::S3);
+        assert_eq!(note.pitch.accidental, Accidental::None);
+        assert_eq!(note.rhythm.length, Length::Quarter);
+        assert_eq!(note.rhythm.dotted, false);
+        assert_eq!(note.rhythm.duration_type, DurationType::Note);
+    }
 }
