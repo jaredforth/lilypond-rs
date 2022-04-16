@@ -75,15 +75,16 @@ impl KeySignature {
 
 #[cfg(test)]
 mod tests {
+    use crate::notation::key::*;
     #[test]
     fn test_new() {
-        let key = super::KeySignature::new();
-        assert_eq!(key.key, super::Key::None);
+        let key = KeySignature::new();
+        assert_eq!(key.key, Key::None);
     }
     #[test]
     fn test_check_num_accidentals() {
         // Test if check_num_accidentals() returns proper value
-        let num_accidentals = super::check_num_accidentals(2);
+        let num_accidentals = check_num_accidentals(2);
         assert_eq!(num_accidentals, 2);
     }
     #[test]
@@ -91,19 +92,19 @@ mod tests {
     fn test_check_num_accidentals_panic() {
         // Test if check_num_accidentals() panics with improper input
         #[allow(unused_variables)]
-        let num_accidentals = super::check_num_accidentals(9);
+        let num_accidentals = check_num_accidentals(9);
     }
     #[test]
     fn test_set_key() {
-        let mut key = super::KeySignature::new();
-        key.set_key(super::Key::Sharps(2));
-        assert_eq!(key.key, super::Key::Sharps(2));
+        let mut key = KeySignature::new();
+        key.set_key(Key::Sharps(2));
+        assert_eq!(key.key, Key::Sharps(2));
     }
     #[test]
     #[should_panic]
     fn test_set_key_panic() {
         // Test if set_key() panics with bad argument
-        let mut key = super::KeySignature::new();
-        key.set_key(super::Key::Sharps(8));
+        let mut key = KeySignature::new();
+        key.set_key(Key::Sharps(8));
     }
 }
