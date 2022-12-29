@@ -16,6 +16,7 @@ use std::path::Path;
 use std::process::Command;
 
 pub mod lilypond_objects;
+pub mod midi;
 pub mod notation;
 pub mod parser;
 
