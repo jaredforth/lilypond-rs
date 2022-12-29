@@ -136,7 +136,7 @@ impl LilyPond {
     /// ```
     /// use lilypond::LilyPond;
     ///
-    /// let mut  ly = LilyPond::new();
+    /// let mut ly = LilyPond::new();
     /// let parsed = ly.parse("{c e f}");
     /// ```
     pub fn parse(&mut self, raw: &'static str) {
