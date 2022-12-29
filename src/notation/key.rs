@@ -26,10 +26,17 @@ pub struct KeySignature {
 
 use crate::notation::key;
 
-fn check_num_accidentals(num: u8) -> u8 {
+/// Check that NUM is valid number of accidentals in key signature.
+///
+/// # Errors
+///
+/// This method returns a `Result` according to whether NUM is a valid number of
+/// accidentals. `Ok(num)` is returned when the number is less than or equal to
+/// 7, and `Err(num)` when greater than 7.
+fn check_num_accidentals(num: u8) -> Result<u8, u8> {
     match num.cmp(&7) {
-        Ordering::Greater => panic!("Invalid number of sharps/flats in key signature."),
-        _ => num,
+        Ordering::Greater => Err(num),
+        _ => Ok(num),
     }
 }
 
@@ -54,7 +61,12 @@ impl KeySignature {
     }
     /// Assign key signature
     ///
-    /// # Usage:
+    /// # Panics
+    ///
+    /// This method panics when passed a key signature with a number of sharps
+    /// or flats greater than seven.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use lilypond::notation::key::{Key, KeySignature};
@@ -67,8 +79,8 @@ impl KeySignature {
     pub fn set_key(&mut self, signature: Key) {
         self.key = match signature {
             Key::None => signature,
-            Key::Sharps(num) => Key::Sharps(key::check_num_accidentals(num)),
-            Key::Flats(num) => Key::Flats(key::check_num_accidentals(num)),
+            Key::Sharps(num) => Key::Sharps(key::check_num_accidentals(num).unwrap()),
+            Key::Flats(num) => Key::Flats(key::check_num_accidentals(num).unwrap()),
         };
     }
 }
@@ -85,14 +97,14 @@ mod tests {
     fn test_check_num_accidentals() {
         // Test if check_num_accidentals() returns proper value
         let num_accidentals = check_num_accidentals(2);
-        assert_eq!(num_accidentals, 2);
+        assert_eq!(num_accidentals, Ok(2));
     }
     #[test]
-    #[should_panic]
-    fn test_check_num_accidentals_panic() {
-        // Test if check_num_accidentals() panics with improper input
+    fn test_check_num_accidentals_error() {
+        // Test if check_num_accidentals() returns an error with improper input
         #[allow(unused_variables)]
         let num_accidentals = check_num_accidentals(9);
+        assert_eq!(num_accidentals, Err(9));
     }
     #[test]
     fn test_set_key() {
