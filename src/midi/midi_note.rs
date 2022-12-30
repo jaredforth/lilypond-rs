@@ -2,6 +2,7 @@
 
 use crate::notation::pitch::{Accidental, NoteName, Octave, Pitch};
 
+#[derive(Debug, PartialEq)]
 pub struct MidiNote {
     note: i16,
 }
@@ -73,6 +74,12 @@ impl From<&Pitch> for MidiNote {
         }
 
         MidiNote { note }
+    }
+}
+
+impl PartialOrd for MidiNote {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.get_note().partial_cmp(&other.get_note())
     }
 }
 
