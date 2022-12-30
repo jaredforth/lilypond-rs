@@ -134,28 +134,142 @@ impl Note {
         )
         .unwrap()
     }
-    /// Translate a lilypond note string to a note object
+}
+
+// private functions for implementing the From<LilyPondNote> trait
+impl Note {
+    fn get_duration_type(note: &LilyPondNote) -> DurationType {
+        match note.get_capture("note_name").as_str() {
+            "r" => DurationType::Rest,
+            _ => DurationType::Note,
+        }
+    }
+
+    fn get_note_name(note: &LilyPondNote) -> NoteName {
+        match Note::get_duration_type(note) {
+            DurationType::Rest => NoteName::None,
+            DurationType::Note => match note.get_capture("note_name").as_str() {
+                "a" => NoteName::A,
+                "b" => NoteName::B,
+                "c" => NoteName::C,
+                "d" => NoteName::D,
+                "e" => NoteName::E,
+                "f" => NoteName::F,
+                "g" => NoteName::G,
+                e => panic!("Invalid note name '{}'.", e),
+            },
+        }
+    }
+
+    fn get_accidental(note: &LilyPondNote) -> Accidental {
+        match Note::get_duration_type(note) {
+            DurationType::Rest => Accidental::None,
+            DurationType::Note => match note.get_capture("accidental").as_str() {
+                "" => Accidental::None,
+                "s" => Accidental::Sharp,
+                "is" => Accidental::Sharp,
+                "ss" => Accidental::DoubleSharp,
+                "isis" => Accidental::DoubleSharp,
+                "f" => Accidental::Flat,
+                "es" => Accidental::Flat,
+                "ff" => Accidental::DoubleFlat,
+                "eses" => Accidental::DoubleFlat,
+                e => panic!("Invalid accidental '{}'.", e),
+            },
+        }
+    }
+
+    fn get_octave(note: &LilyPondNote) -> Octave {
+        match Note::get_duration_type(note) {
+            DurationType::Rest => Octave::None,
+            DurationType::Note => {
+                // octave has to be usize to add count() results from it
+                let mut octave_int: usize = 3;
+                let octave_string = note.get_capture("octave");
+
+                if octave_string.contains(",") && octave_string.contains("'") {
+                    // Check for both octave transposition characters and panic
+                    panic!("Mixed octave transpostion symbols , and '.");
+                } else if octave_string.contains("'") {
+                    octave_int += octave_string.matches("'").count();
+                } else if octave_string.contains(",") {
+                    octave_int -= octave_string.matches(",").count();
+                }
+
+                match octave_int {
+                    0 => Octave::S0,
+                    1 => Octave::S1,
+                    2 => Octave::S2,
+                    3 => Octave::S3,
+                    4 => Octave::S4,
+                    5 => Octave::S5,
+                    6 => Octave::S6,
+                    7 => Octave::S7,
+                    8 => Octave::S8,
+                    9 => Octave::S9,
+                    _ => panic!("Invalid number of octave transpositions."),
+                }
+            }
+        }
+    }
+
+    fn get_length(note: &LilyPondNote) -> Length {
+        match note.get_capture("duration").as_str() {
+            "1" => Length::Whole,
+            "2" => Length::Half,
+            "4" => Length::Quarter,
+            "8" => Length::Eighth,
+            "16" => Length::Sixteenth,
+            "32" => Length::ThirtySecond,
+            "64" => Length::SixtyFourth,
+            "128" => Length::OneTwentyEighth,
+            "" => Default::default(),
+            e => panic!("Invalid duration '{}'.", e),
+        }
+    }
+
+    fn get_dot(note: &LilyPondNote) -> bool {
+        note.get_capture("dot") == "."
+    }
+}
+
+impl From<&LilyPondNote> for Note {
+    /// Translate a lilypond note string to a note object.
     ///
-    /// # Usage
+    /// # Examples
     ///
-    /// ```
-    /// use lilypond::notation::note::Note;
+    /// ```rust
     /// use lilypond::lilypond_objects::lilypond_note::LilyPondNote;
+    /// use lilypond::notation::note::Note;
     /// use lilypond::notation::pitch::{Pitch, NoteName, Accidental, Octave};
     /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
     ///
-    /// let ly_note = LilyPondNote::new("af'4.").unwrap();
-    /// let note = Note::from_lilypond_note(ly_note);
+    /// let ly_note = LilyPondNote::new("af,8.").unwrap();
+    /// let note = Note::from(&ly_note);
     ///
     /// assert_eq!(note.pitch.note_name, NoteName::A);
-    /// assert_eq!(note.pitch.octave, Octave::S4);
+    /// assert_eq!(note.pitch.octave, Octave::S2);
     /// assert_eq!(note.pitch.accidental, Accidental::Flat);
-    /// assert_eq!(note.rhythm.length, Length::Quarter);
+    /// assert_eq!(note.rhythm.length, Length::Eighth);
     /// assert_eq!(note.rhythm.dotted, true);
     /// assert_eq!(note.rhythm.duration_type, DurationType::Note);
     /// ```
-    pub fn from_lilypond_note(ly_note: LilyPondNote) -> Note {
-        ly_note.to_note()
+    fn from(note: &LilyPondNote) -> Note {
+        let note_name = Note::get_note_name(note);
+        let note_accidental = Note::get_accidental(note);
+        let note_octave = Note::get_octave(note);
+        let note_length = Note::get_length(note);
+        let note_duration_type = Note::get_duration_type(note);
+        let note_dot = Note::get_dot(note);
+
+        let mut note = Note::new(note_name);
+        note.pitch.accidental(note_accidental);
+        note.pitch.octave(note_octave);
+        note.rhythm.duration_type(note_duration_type);
+        note.rhythm.length(note_length);
+        note.rhythm.dotted(note_dot);
+
+        return note;
     }
 }
 
@@ -204,12 +318,76 @@ mod tests {
     #[test]
     fn test_from_lilypond_note() {
         let ly_note = LilyPondNote::new("a4").unwrap();
-        let note = Note::from_lilypond_note(ly_note);
+        let note = Note::from(&ly_note);
         assert_eq!(note.pitch.note_name, NoteName::A);
         assert_eq!(note.pitch.octave, Octave::S3);
         assert_eq!(note.pitch.accidental, Accidental::None);
         assert_eq!(note.rhythm.length, Length::Quarter);
         assert_eq!(note.rhythm.dotted, false);
         assert_eq!(note.rhythm.duration_type, DurationType::Note);
+    }
+    #[test]
+    fn test_get_duration_type() {
+        let ly_note = LilyPondNote::new("r8").unwrap();
+        let duration_type = Note::get_duration_type(&ly_note);
+        assert_eq!(duration_type, DurationType::Rest);
+        let ly_note = LilyPondNote::new("f8").unwrap();
+        let duration_type = Note::get_duration_type(&ly_note);
+        assert_eq!(duration_type, DurationType::Note);
+    }
+    #[test]
+    fn test_get_note_name() {
+        let ly_note = LilyPondNote::new("r8").unwrap();
+        let duration_type = Note::get_note_name(&ly_note);
+        assert_eq!(duration_type, NoteName::None);
+        let ly_note = LilyPondNote::new("f8").unwrap();
+        let duration_type = Note::get_note_name(&ly_note);
+        assert_eq!(duration_type, NoteName::F);
+    }
+    #[test]
+    fn test_get_accidental() {
+        let ly_note = LilyPondNote::new("r8").unwrap();
+        let accidental_type = Note::get_accidental(&ly_note);
+        assert_eq!(accidental_type, Accidental::None);
+        let ly_note = LilyPondNote::new("fs").unwrap();
+        let accidental_type = Note::get_accidental(&ly_note);
+        assert_eq!(accidental_type, Accidental::Sharp);
+        let ly_note = LilyPondNote::new("ef").unwrap();
+        let accidental_type = Note::get_accidental(&ly_note);
+        assert_eq!(accidental_type, Accidental::Flat);
+    }
+    #[test]
+    fn test_get_octave() {
+        let ly_note = LilyPondNote::new("r8").unwrap();
+        let octave = Note::get_octave(&ly_note);
+        assert_eq!(octave, Octave::None);
+        let ly_note = LilyPondNote::new("fs,,,").unwrap();
+        let octave = Note::get_octave(&ly_note);
+        assert_eq!(octave, Octave::S0);
+        let ly_note = LilyPondNote::new("ef").unwrap();
+        let octave = Note::get_octave(&ly_note);
+        assert_eq!(octave, Octave::S3);
+        let ly_note = LilyPondNote::new("d''''''").unwrap();
+        let octave = Note::get_octave(&ly_note);
+        assert_eq!(octave, Octave::S9);
+    }
+    #[test]
+    fn test_get_length() {
+        let ly_note = LilyPondNote::new("r8").unwrap();
+        let length = Note::get_length(&ly_note);
+        assert_eq!(length, Length::Eighth);
+        let ly_note = LilyPondNote::new("as,128").unwrap();
+        let length = Note::get_length(&ly_note);
+        assert_eq!(length, Length::OneTwentyEighth);
+        let ly_note = LilyPondNote::new("bf''''64").unwrap();
+        let length = Note::get_length(&ly_note);
+        assert_eq!(length, Length::SixtyFourth);
+    }
+    #[test]
+    fn get_dot() {
+        let ly_note = LilyPondNote::new("r8.").unwrap();
+        assert!(Note::get_dot(&ly_note));
+        let ly_note = LilyPondNote::new("r8").unwrap();
+        assert!(!Note::get_dot(&ly_note));
     }
 }
