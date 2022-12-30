@@ -81,7 +81,9 @@ impl Default for Octave {
 pub enum Accidental {
     None,
     Sharp,
+    DoubleSharp,
     Flat,
+    DoubleFlat,
 }
 
 /// Set no accidental as default

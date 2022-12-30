@@ -62,7 +62,9 @@ impl Note {
             DurationType::Rest => String::from(""),
             DurationType::Note => match self.pitch.accidental {
                 Accidental::Flat => String::from("f"),
+                Accidental::DoubleFlat => String::from("ff"),
                 Accidental::Sharp => String::from("s"),
+                Accidental::DoubleSharp => String::from("ss"),
                 Accidental::None => String::from(""),
             },
         }
