@@ -1,3 +1,5 @@
+//! Abstractions for LilyPond-syntax `String` representations of notes.
+
 use crate::notation::note::Note;
 use crate::notation::pitch::{Accidental, NoteName, Octave};
 use crate::notation::rhythm::{DurationType, Length};
