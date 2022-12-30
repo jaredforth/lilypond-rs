@@ -1,5 +1,7 @@
 //! Abstractions for specifying the pitch of notes
 
+use crate::midi::midi_note::MidiNote;
+
 /// Natural pitch note names.
 ///
 /// These are the 7 pitches in Western music
@@ -197,6 +199,53 @@ impl Pitch {
     }
 }
 
+impl From<&MidiNote> for Pitch {
+    fn from(note: &MidiNote) -> Self {
+        let note_int = note.get_note();
+        let octave_int: i16 = note_int / 12;
+        let pc_int: i16 = note_int % 12;
+
+        Pitch {
+            octave: match octave_int - 1 {
+                -1 => Octave::None,
+                0 => Octave::S0,
+                1 => Octave::S1,
+                2 => Octave::S2,
+                3 => Octave::S3,
+                4 => Octave::S4,
+                5 => Octave::S5,
+                6 => Octave::S6,
+                7 => Octave::S7,
+                8 => Octave::S8,
+                9 => Octave::S9,
+                e => panic!("Invalid octave integer {}.", e),
+            },
+            note_name: match octave_int - 1 {
+                -1 => NoteName::None,
+                _ => match pc_int {
+                    0 | 1 => NoteName::C,
+                    2 => NoteName::D,
+                    3 | 4 => NoteName::E,
+                    5 | 6 => NoteName::F,
+                    7 => NoteName::G,
+                    8 | 9 => NoteName::A,
+                    10 | 11 => NoteName::B,
+                    e => panic!("Invalid pitch-class integer {}.", e),
+                },
+            },
+            accidental: match octave_int - 1 {
+                -1 => Accidental::None,
+                _ => match pc_int {
+                    0 | 2 | 4 | 5 | 7 | 9 | 11 => Accidental::None,
+                    1 | 6 => Accidental::Sharp,
+                    3 | 8 | 10 => Accidental::Flat,
+                    e => panic!("Invalid pitch-class integer {}.", e),
+                },
+            },
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::notation::pitch::*;
@@ -230,5 +279,31 @@ mod test {
         let mut pitch = Pitch::new(NoteName::A);
         pitch.sharpen();
         assert_eq!(pitch.accidental, Accidental::Sharp);
+    }
+    #[test]
+    fn test_from_midi_note() {
+        let middle_c_midi = MidiNote::new(60);
+        let middle_c_pitch = Pitch::from(&middle_c_midi);
+        assert_eq!(middle_c_pitch.octave, Octave::S4);
+        assert_eq!(middle_c_pitch.note_name, NoteName::C);
+        assert_eq!(middle_c_pitch.accidental, Accidental::None);
+        let very_low_midi = MidiNote::new(12);
+        let very_low_pitch = Pitch::from(&very_low_midi);
+        assert_eq!(very_low_pitch.octave, Octave::S0);
+        assert_eq!(very_low_pitch.note_name, NoteName::C);
+        assert_eq!(very_low_pitch.accidental, Accidental::None);
+        let very_high_midi = MidiNote::new(126);
+        let very_high_pitch = Pitch::from(&very_high_midi);
+        assert_eq!(very_high_pitch.octave, Octave::S9);
+        assert_eq!(very_high_pitch.note_name, NoteName::F);
+        assert_eq!(very_high_pitch.accidental, Accidental::Sharp);
+    }
+    #[test]
+    fn test_from_midi_note_rest() {
+        let midi_note = MidiNote::new(0);
+        let pitch = Pitch::from(&midi_note);
+        assert_eq!(pitch.octave, Octave::None);
+        assert_eq!(pitch.note_name, NoteName::None);
+        assert_eq!(pitch.accidental, Accidental::None);
     }
 }
