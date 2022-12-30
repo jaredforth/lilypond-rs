@@ -1,6 +1,6 @@
 //! Abstract types for musical note, describing pitch and rhythm
 
-use crate::lilypond_objects::lilypond_note::LilypondNote;
+use crate::lilypond_objects::lilypond_note::LilyPondNote;
 use crate::notation::pitch::{Accidental, NoteName, Octave, Pitch};
 use crate::notation::rhythm::{DurationType, Length, Rhythm};
 
@@ -116,21 +116,23 @@ impl Note {
     /// let note = Note::new(NoteName::A);
     /// let ly_note = note.to_lilypond_note();
     ///
-    /// assert_eq!("a4", ly_note.name);
+    /// assert_eq!("a4", ly_note.get_note());
     /// ```
-    pub fn to_lilypond_note(&self) -> LilypondNote {
+    pub fn to_lilypond_note(&self) -> LilyPondNote {
         let note_name = self.get_lilypond_note_name();
         let note_accidental = self.get_lilypond_accidental();
         let note_octave = self.get_lilypond_octave();
         let note_duration = self.get_lilypond_duration();
         let note_dot = self.get_lilypond_dot();
 
-        LilypondNote {
-            name: format!(
+        LilyPondNote::new(
+            format!(
                 "{}{}{}{}{}",
                 note_name, note_accidental, note_octave, note_duration, note_dot
-            ),
-        }
+            )
+            .as_str(),
+        )
+        .unwrap()
     }
     /// Translate a lilypond note string to a note object
     ///
@@ -138,11 +140,11 @@ impl Note {
     ///
     /// ```
     /// use lilypond::notation::note::Note;
-    /// use lilypond::lilypond_objects::lilypond_note::LilypondNote;
+    /// use lilypond::lilypond_objects::lilypond_note::LilyPondNote;
     /// use lilypond::notation::pitch::{Pitch, NoteName, Accidental, Octave};
     /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
     ///
-    /// let ly_note = LilypondNote::new("af'4.");
+    /// let ly_note = LilyPondNote::new("af'4.").unwrap();
     /// let note = Note::from_lilypond_note(ly_note);
     ///
     /// assert_eq!(note.pitch.note_name, NoteName::A);
@@ -152,14 +154,14 @@ impl Note {
     /// assert_eq!(note.rhythm.dotted, true);
     /// assert_eq!(note.rhythm.duration_type, DurationType::Note);
     /// ```
-    pub fn from_lilypond_note(ly_note: LilypondNote) -> Note {
+    pub fn from_lilypond_note(ly_note: LilyPondNote) -> Note {
         ly_note.to_note()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::lilypond_objects::lilypond_note::LilypondNote;
+    use crate::lilypond_objects::lilypond_note::LilyPondNote;
     use crate::notation::note::Note;
     use crate::notation::pitch::{Accidental, NoteName, Octave};
     use crate::notation::rhythm::{DurationType, Length};
@@ -197,11 +199,11 @@ mod tests {
     fn test_to_lilypond_note() {
         let note = Note::new(NoteName::A);
         let ly_note = note.to_lilypond_note();
-        assert_eq!(ly_note.name, "a4");
+        assert_eq!(ly_note.get_note(), "a4");
     }
     #[test]
     fn test_from_lilypond_note() {
-        let ly_note = LilypondNote::new("a4");
+        let ly_note = LilyPondNote::new("a4").unwrap();
         let note = Note::from_lilypond_note(ly_note);
         assert_eq!(note.pitch.note_name, NoteName::A);
         assert_eq!(note.pitch.octave, Octave::S3);
