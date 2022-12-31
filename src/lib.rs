@@ -46,7 +46,7 @@ pub mod parser;
 /// fsutils::rm(output);
 ///
 /// ```
-pub fn compile(input_file: &'static str) -> bool {
+pub fn compile(input_file: &str) -> bool {
     if is_lilypond_file(input_file) {
         match Command::new("lilypond").arg(input_file).output() {
             Ok(o) => {
@@ -95,7 +95,7 @@ pub fn compile(input_file: &'static str) -> bool {
 /// fsutils::rm(valid);
 /// fsutils::rm(invalid);
 /// ```
-pub fn is_lilypond_file(filename: &'static str) -> bool {
+pub fn is_lilypond_file(filename: &str) -> bool {
     match Path::new(filename).extension() {
         Some(ex) => {
             if ex == "ly" {
