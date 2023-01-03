@@ -10,11 +10,15 @@
 //! **lilypond** provides an API to ergonomically wrap LilyPond,
 //! and provide Rust types that resolve to LilyPond output.
 
+use lazy_static::lazy_static;
+
+pub use crate::languages::{lilypond_from_note, note_from_lilypond, LANGUAGE_STR, NOTE_REGEX_STR};
 use crate::notation::pitch::NoteName;
 use std::io::{self, Write};
 use std::path::Path;
 use std::process::Command;
 
+mod languages;
 pub mod lilypond_objects;
 pub mod midi;
 pub mod notation;
@@ -142,4 +146,43 @@ impl LilyPond {
     pub fn parse(&mut self, raw: &'static str) {
         println!("{}", raw);
     }
+}
+
+/// The possible languages for note parsing.
+///
+/// See
+/// <https://lilypond.org/doc/v2.24/Documentation/notation/writing-pitches#note-names-in-other-languages>
+/// or the corresponding page for whatever LilyPond version is most current
+/// for more information. Currently only supports English and Dutch (LilyPond's
+/// default).
+///
+/// TODO: add support for more languages.
+pub enum NoteNameLanguage {
+    /// English note names and accidentals.
+    ///
+    /// - Note names: `c`, `d`, `e`, `f`, `g`, `a`, `b`
+    ///
+    /// - Accidentals: `s`, `f`, `ss`, `ff`, `-sharp`, `-flat`, `-sharpsharp`,
+    /// `-flatflat`
+    ///
+    English,
+    /// Dutch note names and accidentals.
+    ///
+    /// - Note names: `c`, `d`, `e`, `f`, `g`, `a`, `b`
+    /// - Accidentals: `is`, `es`, `isis`, `eses`
+    Nederlands,
+}
+
+impl Default for NoteNameLanguage {
+    /// Initialize the default `NoteNameLanguage` to English.
+    fn default() -> Self {
+        Self::English
+    }
+}
+
+lazy_static! {
+    /// The default NoteNameLanguage for the application is English.
+    ///
+    /// TODO: make this read a config file via the `config` crate.
+    pub static ref NOTE_NAME_LANGUAGE: NoteNameLanguage = Default::default();
 }

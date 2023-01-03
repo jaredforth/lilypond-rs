@@ -1,21 +1,21 @@
 //! Abstractions for LilyPond-syntax `String` representations of notes.
 
-use crate::notation::{
-    note::Note,
-    pitch::{Accidental, NoteName, Octave},
-    rhythm::{DurationType, Length},
-};
+use crate::{lilypond_from_note, notation::note::Note, NOTE_REGEX_STR};
 use lazy_static::lazy_static;
 use regex::Regex;
 
 lazy_static! {
     /// A regular expression for matching and capturing from LilyPond notes.
     ///
-    /// Contains the following named capture groups:
-    /// - `note_name`: the name of the note, i.e. lowercase letters a-g or r for
-    /// a rest.
+    /// This regex changes depending on the language set by
+    /// [`NOTE_NAME_LANGUAGE`][struct@crate::NOTE_NAME_LANGUAGE].
+    ///
+    /// This regex contains the following named capture groups:
+    /// - `note_name`: the name of the note according to the chosen language,
+    /// e.g., in English, lowercase letters a-g or r for a rest.
     /// - `accidental`: the accidental of the note, i.e. between zero and two
-    /// repetitions of either "is" or "es" (or "s" or "f" in English notation).
+    /// repetitions of the language's chosen accidentals (e.g. "s" and "f" in
+    /// English).
     /// - `octave`: the absolute octave of the note, i.e. between zero and three
     /// commas for each octave below 3 or between zero and six apostrophes for
     /// each octave above 3.
@@ -23,8 +23,12 @@ lazy_static! {
     /// note.
     /// - `dot`: a period, present if the note is dotted.
     ///
-    /// These can be used to extract the relevant subsections of the note for
-    /// further analysis as such:
+    /// Only the `note_name` and `accidental` fields change depending on the
+    /// specified [`NOTE_NAME_LANGUAGE`][struct@crate::NOTE_NAME_LANGUAGE]; the
+    /// others remain consistent.
+    ///
+    /// These capture groups can be used to extract the relevant subsections of
+    /// the note for further analysis as such:
     ///
     /// ```rust
     /// use lilypond::lilypond_objects::lilypond_note::LILYPOND_NOTE_REGEX;
@@ -53,20 +57,14 @@ lazy_static! {
     /// ```rust
     /// use lilypond::lilypond_objects::lilypond_note::LILYPOND_NOTE_REGEX;
     ///
-    /// let good_note = "fisis,,,64.";
+    /// let good_note = "fss,,,64.";
     /// let bad_note = "asdf";
     ///
     /// assert!(LILYPOND_NOTE_REGEX.is_match(good_note));
     /// assert!(!LILYPOND_NOTE_REGEX.is_match(bad_note));
     /// ```
     pub static ref LILYPOND_NOTE_REGEX: Regex = Regex::new(
-        r"(?x-u) # Flags: x = whitespace allowed, -u = no unicode support
-        ^(?P<note_name>[a-gr]) # note name or rest
-        (?P<accidental>(?:f{0,2}|s{0,2})|(?:(?:is){0,2}|(?:es){0,2})) # accidental
-        (?P<octave>(?:(?:,{0,3})|(?:'{0,6}))?) # octave transposition characters
-        (?P<duration>(?:1|2|4|8|(?:16)|(?:32)|(?:64)|(?:128))?) # Durations
-        (?P<dot>\.?)$ # optional dot and end of line
-        ",
+        *NOTE_REGEX_STR
     )
     .unwrap();
 }
@@ -135,9 +133,9 @@ impl LilyPondNote {
     /// ```rust
     /// use lilypond::lilypond_objects::lilypond_note::LilyPondNote;
     ///
-    /// let note = LilyPondNote::new("aeses'''''8").unwrap();
+    /// let note = LilyPondNote::new("aff'''''8").unwrap();
     /// assert_eq!(note.get_capture("note_name"), "a");
-    /// assert_eq!(note.get_capture("accidental"), "eses");
+    /// assert_eq!(note.get_capture("accidental"), "ff");
     /// assert_eq!(note.get_capture("octave"), "'''''");
     /// assert_eq!(note.get_capture("duration"), "8");
     /// assert_eq!(note.get_capture("dot"), "");
@@ -152,6 +150,11 @@ impl LilyPondNote {
 impl From<&Note> for LilyPondNote {
     /// Translate a note object into a lilypond note string
     ///
+    /// # Panics
+    ///
+    /// Calls `.unwrap()`, so may panic if the chosen language's note string is
+    /// malformed in some way.
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -164,60 +167,7 @@ impl From<&Note> for LilyPondNote {
     /// assert_eq!(ly_note.get_note(), "a4");
     /// ```
     fn from(note: &Note) -> Self {
-        LilyPondNote::new(
-            format!(
-                "{}{}{}{}{}",
-                match note.rhythm.duration_type {
-                    DurationType::Rest => "r",
-                    DurationType::Note => match note.pitch.note_name {
-                        NoteName::A => "a",
-                        NoteName::B => "b",
-                        NoteName::C => "c",
-                        NoteName::D => "d",
-                        NoteName::E => "e",
-                        NoteName::F => "f",
-                        NoteName::G => "g",
-                        NoteName::None => "r",
-                    },
-                },
-                match note.pitch.accidental {
-                    Accidental::None => "",
-                    Accidental::Flat => "f",
-                    Accidental::DoubleFlat => "ff",
-                    Accidental::Sharp => "s",
-                    Accidental::DoubleSharp => "ss",
-                },
-                match note.pitch.octave {
-                    Octave::S0 => ",,,",
-                    Octave::S1 => ",,",
-                    Octave::S2 => ",",
-                    Octave::S3 => "",
-                    Octave::S4 => "'",
-                    Octave::S5 => "''",
-                    Octave::S6 => "'''",
-                    Octave::S7 => "''''",
-                    Octave::S8 => "'''''",
-                    Octave::S9 => "''''''",
-                    Octave::None => "",
-                },
-                match note.rhythm.length {
-                    Length::Whole => "1",
-                    Length::Half => "2",
-                    Length::Quarter => "4",
-                    Length::Eighth => "8",
-                    Length::Sixteenth => "16",
-                    Length::ThirtySecond => "32",
-                    Length::SixtyFourth => "64",
-                    Length::OneTwentyEighth => "128",
-                },
-                match note.rhythm.dotted {
-                    true => ".",
-                    false => "",
-                }
-            )
-            .as_str(),
-        )
-        .unwrap()
+        LilyPondNote::new(lilypond_from_note(note).as_str()).unwrap()
     }
 }
 
@@ -233,19 +183,15 @@ mod test {
     }
     #[test]
     fn test_new_lilypond_note() {
-        // Testing a bunch of possible lilypond notes
+        // Testing a bunch of possible english lilypond notes
         let ly_notes = [
             "r",
             "a",
             "bf",
-            "bes",
             "cs",
-            "cis",
             "d,",
             "ef'",
-            "ees'",
             "fs",
-            "fis",
             "g,,",
             "af''1",
             "bs2",
@@ -261,7 +207,6 @@ mod test {
             "e4.",
             "ff,,,8.",
             "fff,,,8.",
-            "fisis,,,8.",
             "gs''''''16.",
         ];
         for n in ly_notes {
