@@ -1,14 +1,15 @@
-//! Abstractions for defining time signatures
+//! Abstractions for defining time signatures.
 
 #[derive(PartialEq, Debug)]
 pub struct TimeSignature {
-    /// The number of beats per measure
+    /// The number of beats per measure.
     pub numerator: u8,
-    /// The fraction of a whole note representing the length of a beat
+    /// The fraction of a whole note representing the length of a beat.
     pub denominator: u8,
 }
 
 impl Default for TimeSignature {
+    /// Initialize default time signature to 4/4.
     fn default() -> Self {
         TimeSignature {
             numerator: 4,
@@ -18,11 +19,11 @@ impl Default for TimeSignature {
 }
 
 impl TimeSignature {
-    /// Construct a new time signature
+    /// Construct a new time signature.
     ///
     /// This will initialize a new time signature with the default of 4/4.
     ///
-    /// # Usage:
+    /// # Examples
     ///
     /// ```
     /// use lilypond::notation::time::TimeSignature;
@@ -35,11 +36,11 @@ impl TimeSignature {
     pub fn new() -> TimeSignature {
         Default::default()
     }
-    /// Set number of beats
+    /// Set number of beats.
     ///
     /// This will set the numerator of a time signature.
     ///
-    /// # Usage:
+    /// # Examples
     ///
     /// ```
     /// use lilypond::notation::time::TimeSignature;
@@ -53,11 +54,11 @@ impl TimeSignature {
     pub fn numerator(&mut self, numerator: u8) {
         self.numerator = numerator;
     }
-    /// Set length of beat
+    /// Set length of beat.
     ///
     /// This will set the denominator of a time signature.
     ///
-    /// # Usage:
+    /// # Examples
     ///
     /// ```
     /// use lilypond::notation::time::TimeSignature;

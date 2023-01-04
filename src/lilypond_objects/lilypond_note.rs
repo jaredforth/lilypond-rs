@@ -81,8 +81,9 @@ impl LilyPondNote {
     /// # Errors
     ///
     /// This function returns a Result according to whether `&str note` matches
-    /// `LILYPOND_NOTE_REGEX`. On a successful match, return `Ok(LilyPondNote)`,
-    /// and on a failure, return `Err(())`.
+    /// [`LILYPOND_NOTE_REGEX`][struct@crate::lilypond_objects::lilypond_note::LILYPOND_NOTE_REGEX].
+    /// On a successful match, return `Ok(LilyPondNote)`, and on a failure,
+    /// return `Err(())`.
     ///
     /// # Examples
     ///
@@ -103,7 +104,7 @@ impl LilyPondNote {
     }
 
     /// Return a reference to the string that represents the current
-    /// `LilyPondNote`.
+    /// [`LilyPondNote`].
     ///
     /// # Examples
     ///
@@ -152,8 +153,11 @@ impl From<&Note> for LilyPondNote {
     ///
     /// # Panics
     ///
-    /// Calls `.unwrap()`, so may panic if the chosen language's note string is
-    /// malformed in some way.
+    /// Calls `Result::unwrap()`, so may panic if the output of
+    /// [`lilypond_from_note`] is malformed in some way. If so, the language
+    /// module corresponding to the value of
+    /// [`NOTE_NAME_LANGUAGE`][struct@crate::NOTE_NAME_LANGUAGE] has a bug and
+    /// should be reported.
     ///
     /// # Examples
     ///

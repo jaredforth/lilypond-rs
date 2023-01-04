@@ -1,6 +1,6 @@
-//! Abstractions for specifying the rhythm of notes
+//! Abstractions for specifying the rhythm of notes.
 
-/// Possible lengths
+/// Possible lengths.
 #[derive(PartialEq, Debug)]
 pub enum Length {
     Whole,
@@ -14,12 +14,13 @@ pub enum Length {
 }
 
 impl Default for Length {
+    /// Set default length to quarter note.
     fn default() -> Self {
         Length::Quarter
     }
 }
 
-/// Type of duration
+/// Type of duration.
 #[derive(PartialEq, Debug)]
 pub enum DurationType {
     Note,
@@ -27,28 +28,29 @@ pub enum DurationType {
 }
 
 impl Default for DurationType {
+    /// Set default duration type to `DurationType::Note`.
     fn default() -> Self {
         DurationType::Note
     }
 }
 
-/// A duration for a note
+/// A duration for a note.
 #[derive(PartialEq, Debug)]
 pub struct Rhythm {
-    /// Length e.g. Quarter, Half, or Whole
+    /// Length e.g. Quarter, Half, or Whole.
     pub length: Length,
-    /// Whether or not the note is dotted
+    /// Whether or not the note is dotted.
     pub dotted: bool,
-    /// The duration type (Note or Rest)
+    /// The duration type (Note or Rest).
     pub duration_type: DurationType,
 }
 
 impl Rhythm {
-    /// Construct a new rhythm
+    /// Construct a new rhythm.
     ///
     /// This will initialize with default values.
     ///
-    /// # Usage:
+    /// # Examples
     ///
     /// ```
     /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
@@ -66,9 +68,9 @@ impl Rhythm {
             duration_type: Default::default(),
         }
     }
-    /// Set length for a rhythm
+    /// Set length for a rhythm.
     ///
-    /// # Usage:
+    /// # Examples
     ///
     /// ```
     ///
@@ -82,9 +84,9 @@ impl Rhythm {
     pub fn length(&mut self, length: Length) {
         self.length = length;
     }
-    /// Set whether or not a rhythm is dotted
+    /// Set whether or not a rhythm is dotted.
     ///
-    /// # Usage:
+    /// # Examples
     ///
     /// ```
     ///
@@ -98,9 +100,9 @@ impl Rhythm {
     pub fn dotted(&mut self, is_dotted: bool) {
         self.dotted = is_dotted;
     }
-    /// Set duration type
+    /// Set duration type.
     ///
-    /// # Usage:
+    /// # Examples
     ///
     /// ```
     /// use lilypond::notation::rhythm::{Rhythm, DurationType};

@@ -7,6 +7,7 @@ pub struct MidiNote {
     note: i16,
 }
 
+// TODO: INPUT VALIDATION
 impl MidiNote {
     /// Initialize a new `MidiNote` object with given pitch
     pub fn new(note: i16) -> Self {

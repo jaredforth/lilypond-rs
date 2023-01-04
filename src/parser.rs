@@ -6,7 +6,7 @@ use regex::Regex;
 
 /// Gets content between curly brackets
 ///
-/// ## Usage:
+/// # Examples
 ///
 /// ```
 /// use lilypond::parser::curly_brackets;

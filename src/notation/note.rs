@@ -12,8 +12,8 @@ pub struct Note {
     pub rhythm: Rhythm,
 }
 
-/// TODO shorthand for creating a new note with pitch and duration
-/// TODO also need to create staff, time signature, key signature, chord
+/// - TODO shorthand for creating a new note with pitch and duration
+/// - TODO also need to create staff, time signature, key signature, chord
 /// before we have a minimum viable product
 impl Note {
     /// Construct a new note
@@ -21,7 +21,7 @@ impl Note {
     /// This will take a note name and initialize a note with default octave and
     /// duration.
     ///
-    /// # Usage:
+    /// # Examples
     ///
     /// ```
     /// use lilypond::notation::note::Note;
@@ -45,8 +45,6 @@ impl Note {
     }
 }
 
-// TODO: Implement language-based parsing
-// private functions for implementing the From<LilyPondNote> trait
 impl From<&LilyPondNote> for Note {
     /// Translate a lilypond note string to a note object.
     ///

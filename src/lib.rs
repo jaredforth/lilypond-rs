@@ -78,7 +78,7 @@ pub fn compile(input_file: &str) -> bool {
 
 /// Checks if file has `.ly` extension
 ///
-/// # Usage:
+/// # Examples
 ///
 /// ```
 /// use lilypond::is_lilypond_file;
@@ -121,7 +121,7 @@ pub struct LilyPond {
 impl LilyPond {
     /// Creates new instance of `LilyPond` struct
     ///
-    /// ## Usage:
+    /// # Examples
     ///
     /// ```
     /// use lilypond::LilyPond;
@@ -135,7 +135,7 @@ impl LilyPond {
     }
     /// Parses LilyPond input as a string into the data structure.
     ///
-    /// ## Usage:
+    /// # Examples
     ///
     /// ```
     /// use lilypond::LilyPond;
@@ -181,7 +181,22 @@ impl Default for NoteNameLanguage {
 }
 
 lazy_static! {
-    /// The default NoteNameLanguage for the application is English.
+    /// The [`NoteNameLanguage`][crate::NoteNameLanguage] for parsing from and
+    /// encoding to
+    /// [`LilyPondNote`][crate::lilypond_objects::lilypond_note::LilyPondNote]
+    /// objects.
+    ///
+    /// The default NoteNameLanguage for the library is English.
+    ///
+    /// Note that this is created by the `lazy_static!` macro, and as such may
+    /// need to be dereferenced with the `*` operator (e.g. in `match`
+    /// expressions).
+    ///
+    /// ```rust
+    /// match *lilypond::NOTE_NAME_LANGUAGE {
+    ///     _ => println!("Don't forget to deref!"),
+    /// }
+    /// ```
     ///
     /// TODO: make this read a config file via the `config` crate.
     pub static ref NOTE_NAME_LANGUAGE: NoteNameLanguage = Default::default();

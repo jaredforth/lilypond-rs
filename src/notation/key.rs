@@ -41,11 +41,11 @@ fn check_num_accidentals(num: u8) -> Result<u8, u8> {
 }
 
 impl KeySignature {
-    /// Construct a new key signature
+    /// Construct a new key signature.
     ///
-    /// This will initialize a C Major key signature
+    /// This will initialize a C Major key signature.
     ///
-    /// # Usage:
+    /// # Examples
     ///
     /// ```
     /// use lilypond::notation::key::{Key, KeySignature};
@@ -59,7 +59,7 @@ impl KeySignature {
             key: Default::default(),
         }
     }
-    /// Assign key signature
+    /// Assign key signature.
     ///
     /// # Panics
     ///

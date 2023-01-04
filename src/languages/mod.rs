@@ -49,7 +49,7 @@ lazy_static! {
     };
 }
 
-/// Convert a note into a String according to the value of
+/// Convert a note into a LilyPond-formatted String according to the value of
 /// [`NOTE_NAME_LANGUAGE`][struct@crate::NOTE_NAME_LANGUAGE].
 pub fn lilypond_from_note(note: &Note) -> String {
     match *crate::NOTE_NAME_LANGUAGE {
