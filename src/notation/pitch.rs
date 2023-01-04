@@ -282,17 +282,17 @@ mod test {
     }
     #[test]
     fn test_from_midi_note() {
-        let middle_c_midi = MidiNote::new(60);
+        let middle_c_midi = MidiNote::new(60).unwrap();
         let middle_c_pitch = Pitch::from(&middle_c_midi);
         assert_eq!(middle_c_pitch.octave, Octave::S4);
         assert_eq!(middle_c_pitch.note_name, NoteName::C);
         assert_eq!(middle_c_pitch.accidental, Accidental::None);
-        let very_low_midi = MidiNote::new(12);
+        let very_low_midi = MidiNote::new(12).unwrap();
         let very_low_pitch = Pitch::from(&very_low_midi);
         assert_eq!(very_low_pitch.octave, Octave::S0);
         assert_eq!(very_low_pitch.note_name, NoteName::C);
         assert_eq!(very_low_pitch.accidental, Accidental::None);
-        let very_high_midi = MidiNote::new(126);
+        let very_high_midi = MidiNote::new(126).unwrap();
         let very_high_pitch = Pitch::from(&very_high_midi);
         assert_eq!(very_high_pitch.octave, Octave::S9);
         assert_eq!(very_high_pitch.note_name, NoteName::F);
@@ -300,7 +300,7 @@ mod test {
     }
     #[test]
     fn test_from_midi_note_rest() {
-        let midi_note = MidiNote::new(0);
+        let midi_note = MidiNote::new(0).unwrap();
         let pitch = Pitch::from(&midi_note);
         assert_eq!(pitch.octave, Octave::None);
         assert_eq!(pitch.note_name, NoteName::None);

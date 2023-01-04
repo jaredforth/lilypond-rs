@@ -2,6 +2,7 @@
 
 use crate::notation::pitch::{Accidental, NoteName, Octave, Pitch};
 
+/// A representation of a single pitch as a MIDI integer.
 #[derive(Debug, PartialEq)]
 pub struct MidiNote {
     note: i16,
@@ -9,19 +10,44 @@ pub struct MidiNote {
 
 // TODO: INPUT VALIDATION
 impl MidiNote {
-    /// Initialize a new `MidiNote` object with given pitch
-    pub fn new(note: i16) -> Self {
-        MidiNote { note }
+    /// Attempt to initialize a new `MidiNote` object with given pitch.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `Result` depending on whether the input `note: i16` is
+    /// positive (i.e. a valid MIDI integer). On a success, returns
+    /// `Ok(MidiNote)` and on a failure, returns `Err(String)`, where the
+    /// `String` is the error message.
+    ///
+    /// # Examples
+    ///
+    /// A successful initialization:
+    ///
+    /// ```rust
+    /// use lilypond::midi::midi_note::MidiNote;
+    ///
+    /// let note = MidiNote::new(60).unwrap(); // middle c
+    /// ```
+    ///
+    /// A failed initialization:
+    ///
+    /// ```rust
+    /// use lilypond::midi::midi_note::MidiNote;
+    ///
+    /// let note = MidiNote::new(-42); // invalid integer
+    /// assert_eq!(note, Err(String::from("Invalid MIDI integer -42.")))
+    /// ```
+    pub fn new(note: i16) -> Result<Self, String> {
+        if note < 0 {
+            Err(format!("Invalid MIDI integer {}.", note))
+        } else {
+            Ok(Self { note })
+        }
     }
 
-    /// Getter for `note` field in `MidiNote` struct.
+    /// Get the MIDI note integer of the current [`MidiNote`] object.
     pub fn get_note(&self) -> i16 {
         self.note
-    }
-
-    /// Setter for `note` field in `MidiNote` struct.
-    pub fn set_note(&mut self, note: i16) {
-        self.note = note;
     }
 }
 
@@ -32,8 +58,10 @@ impl Default for MidiNote {
     }
 }
 
-impl From<&Pitch> for MidiNote {
-    fn from(pitch: &Pitch) -> Self {
+impl std::convert::TryFrom<&Pitch> for MidiNote {
+    type Error = String;
+
+    fn try_from(pitch: &Pitch) -> Result<Self, Self::Error> {
         // initialize note to MIDI note for pitch C of a given octave
         let mut note: i16 = match pitch.octave {
             Octave::S0 => 12,
@@ -70,11 +98,7 @@ impl From<&Pitch> for MidiNote {
             Accidental::DoubleFlat => -2,
         };
 
-        if note < 0 {
-            panic!("Cannot have negative MIDI value.");
-        }
-
-        MidiNote { note }
+        Self::new(note)
     }
 }
 
@@ -99,19 +123,19 @@ mod test {
     }
     #[test]
     fn test_new() {
-        let midi_note = MidiNote::new(48);
+        let midi_note = MidiNote::new(48).unwrap();
         assert_eq!(midi_note.get_note(), 48);
     }
     #[test]
-    fn test_set() {
-        let mut midi_note = MidiNote::default();
-        midi_note.set_note(84);
-        assert_eq!(midi_note.get_note(), 84);
+    #[allow(unused_variables)]
+    #[should_panic]
+    fn test_new_error() {
+        let midi_note = MidiNote::new(-1).unwrap();
     }
     #[test]
     fn test_from_pitch_negative() {
         let note = Note::try_from(&LilyPondNote::new("rff").unwrap()).unwrap();
-        let midi_note = MidiNote::from(&note.pitch);
+        let midi_note = MidiNote::try_from(&note.pitch).unwrap();
         assert_eq!(midi_note.get_note(), 0);
     }
 }
