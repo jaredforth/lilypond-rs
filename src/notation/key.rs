@@ -21,10 +21,8 @@ impl Default for Key {
 
 #[derive(PartialEq, Debug)]
 pub struct KeySignature {
-    pub key: Key,
+    key: Key,
 }
-
-use crate::notation::key;
 
 /// Check that NUM is valid number of accidentals in key signature.
 ///
@@ -41,47 +39,46 @@ fn check_num_accidentals(num: u8) -> Result<u8, u8> {
 }
 
 impl KeySignature {
-    /// Construct a new key signature.
+    /// Attempt to construct a new `KeySignature` with the input [`Key`].
     ///
-    /// This will initialize a C Major key signature.
+    /// # Errors
+    ///
+    /// Returns a `Result` according to whether the input [`Key`] object is
+    /// valid (i.e. `Sharp` and `Flat` signatures may have between 0 and 7
+    /// accidentals). On a success, returns `Ok(KeySignature)`, and on a
+    /// failure, returns `Err(String)`, where the `String` is the error message.
     ///
     /// # Examples
     ///
-    /// ```
+    /// A successful initialization:
+    ///
+    /// ```rust
     /// use lilypond::notation::key::{Key, KeySignature};
     ///
-    /// let key = KeySignature::new();
-    ///
-    /// assert_eq!(key.key, Key::None);
+    /// let key = KeySignature::new(Key::None).unwrap();
+    /// assert_eq!(key.get_key(), &Key::None);
     /// ```
-    pub fn new() -> KeySignature {
-        KeySignature {
-            key: Default::default(),
+    ///
+    /// An unsuccessful initialization:
+    ///
+    /// ```rust
+    /// use lilypond::notation::key::{Key, KeySignature};
+    ///
+    /// let key = KeySignature::new(Key::Flats(10));
+    /// assert_eq!(key, Err(String::from("Invalid number of accidentals 10.")));
+    /// ```
+    pub fn new(key: Key) -> Result<KeySignature, String> {
+        match key {
+            Key::None => Ok(KeySignature { key }),
+            Key::Flats(n) | Key::Sharps(n) => match check_num_accidentals(n) {
+                Ok(_) => Ok(KeySignature { key }),
+                Err(e) => Err(format!("Invalid number of accidentals {}.", e)),
+            },
         }
     }
-    /// Assign key signature.
-    ///
-    /// # Panics
-    ///
-    /// This method panics when passed a key signature with a number of sharps
-    /// or flats greater than seven.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use lilypond::notation::key::{Key, KeySignature};
-    ///
-    /// let mut key = KeySignature::new();
-    /// key.set_key(Key::Sharps(2));
-    ///
-    /// assert_eq!(key.key, Key::Sharps(2));
-    /// ```
-    pub fn set_key(&mut self, signature: Key) {
-        self.key = match signature {
-            Key::None => signature,
-            Key::Sharps(num) => Key::Sharps(key::check_num_accidentals(num).unwrap()),
-            Key::Flats(num) => Key::Flats(key::check_num_accidentals(num).unwrap()),
-        };
+    /// Return a reference to the [`Key`] object of the current `KeySignature`.
+    pub fn get_key(&self) -> &Key {
+        &self.key
     }
 }
 
@@ -90,8 +87,8 @@ mod tests {
     use crate::notation::key::*;
     #[test]
     fn test_new() {
-        let key = KeySignature::new();
-        assert_eq!(key.key, Key::None);
+        let key = KeySignature::new(Key::None).unwrap();
+        assert_eq!(key.get_key(), &Key::None);
     }
     #[test]
     fn test_check_num_accidentals() {
@@ -102,21 +99,13 @@ mod tests {
     #[test]
     fn test_check_num_accidentals_error() {
         // Test if check_num_accidentals() returns an error with improper input
-        #[allow(unused_variables)]
         let num_accidentals = check_num_accidentals(9);
         assert_eq!(num_accidentals, Err(9));
     }
     #[test]
-    fn test_set_key() {
-        let mut key = KeySignature::new();
-        key.set_key(Key::Sharps(2));
-        assert_eq!(key.key, Key::Sharps(2));
-    }
-    #[test]
     #[should_panic]
-    fn test_set_key_panic() {
-        // Test if set_key() panics with bad argument
-        let mut key = KeySignature::new();
-        key.set_key(Key::Sharps(8));
+    #[allow(unused_variables)]
+    fn test_new_error() {
+        let key = KeySignature::new(Key::Sharps(8)).unwrap();
     }
 }
