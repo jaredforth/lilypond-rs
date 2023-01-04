@@ -58,43 +58,43 @@ fn lilypond_from_accidental(note: &Note) -> &str {
     }
 }
 
-pub fn note_from_lilypond(note: &LilyPondNote) -> Note {
-    Note {
+pub fn note_from_lilypond(note: &LilyPondNote) -> Result<Note, String> {
+    Ok(Note {
         pitch: Pitch {
-            note_name: note_name_from_lilypond(note),
-            accidental: accidental_from_lilypond(note),
-            octave: common::octave_from_lilypond(note),
+            note_name: note_name_from_lilypond(note)?,
+            accidental: accidental_from_lilypond(note)?,
+            octave: common::octave_from_lilypond(note)?,
         },
-        rhythm: common::rhythm_from_lilypond(note),
-    }
+        rhythm: common::rhythm_from_lilypond(note)?,
+    })
 }
 
-fn note_name_from_lilypond(note: &LilyPondNote) -> NoteName {
+fn note_name_from_lilypond(note: &LilyPondNote) -> Result<NoteName, String> {
     match common::duration_type_from_lilypond(note) {
-        DurationType::Rest => NoteName::None,
+        DurationType::Rest => Ok(NoteName::None),
         DurationType::Note => match note.get_capture("note_name").as_str() {
-            "a" => NoteName::A,
-            "b" => NoteName::B,
-            "c" => NoteName::C,
-            "d" => NoteName::D,
-            "e" => NoteName::E,
-            "f" => NoteName::F,
-            "g" => NoteName::G,
-            e => panic!("Invalid note name '{}'.", e),
+            "a" => Ok(NoteName::A),
+            "b" => Ok(NoteName::B),
+            "c" => Ok(NoteName::C),
+            "d" => Ok(NoteName::D),
+            "e" => Ok(NoteName::E),
+            "f" => Ok(NoteName::F),
+            "g" => Ok(NoteName::G),
+            e => Err(format!("Invalid note name '{}'.", e)),
         },
     }
 }
 
-fn accidental_from_lilypond(note: &LilyPondNote) -> Accidental {
+fn accidental_from_lilypond(note: &LilyPondNote) -> Result<Accidental, String> {
     match common::duration_type_from_lilypond(note) {
-        DurationType::Rest => Accidental::None,
+        DurationType::Rest => Ok(Accidental::None),
         DurationType::Note => match note.get_capture("accidental").as_str() {
-            "" => Accidental::None,
-            "is" => Accidental::Sharp,
-            "isis" => Accidental::DoubleSharp,
-            "es" => Accidental::Flat,
-            "eses" => Accidental::DoubleFlat,
-            e => panic!("Invalid accidental '{}'.", e),
+            "" => Ok(Accidental::None),
+            "is" => Ok(Accidental::Sharp),
+            "isis" => Ok(Accidental::DoubleSharp),
+            "es" => Ok(Accidental::Flat),
+            "eses" => Ok(Accidental::DoubleFlat),
+            e => Err(format!("Invalid accidental '{}'.", e)),
         },
     }
 }
@@ -189,37 +189,37 @@ mod test {
     #[allow(dead_code)]
     fn test_accidental_from_lilypond() {
         let ly_note = LilyPondNote::new("r8").unwrap();
-        let accidental_type = accidental_from_lilypond(&ly_note);
+        let accidental_type = accidental_from_lilypond(&ly_note).unwrap();
         assert_eq!(accidental_type, Accidental::None);
         let ly_note = LilyPondNote::new("fis").unwrap();
-        let accidental_type = accidental_from_lilypond(&ly_note);
+        let accidental_type = accidental_from_lilypond(&ly_note).unwrap();
         assert_eq!(accidental_type, Accidental::Sharp);
         let ly_note = LilyPondNote::new("ees").unwrap();
-        let accidental_type = accidental_from_lilypond(&ly_note);
+        let accidental_type = accidental_from_lilypond(&ly_note).unwrap();
         assert_eq!(accidental_type, Accidental::Flat);
         let ly_note = LilyPondNote::new("gisis").unwrap();
-        let accidental_type = accidental_from_lilypond(&ly_note);
+        let accidental_type = accidental_from_lilypond(&ly_note).unwrap();
         assert_eq!(accidental_type, Accidental::DoubleSharp);
         let ly_note = LilyPondNote::new("aeses").unwrap();
-        let accidental_type = accidental_from_lilypond(&ly_note);
+        let accidental_type = accidental_from_lilypond(&ly_note).unwrap();
         assert_eq!(accidental_type, Accidental::DoubleFlat);
     }
     #[allow(dead_code)]
     fn test_note_name_from_lilypond() {
         let ly_note = LilyPondNote::new("r8").unwrap();
-        let note_name = note_name_from_lilypond(&ly_note);
+        let note_name = note_name_from_lilypond(&ly_note).unwrap();
         assert_eq!(note_name, NoteName::None);
         let ly_note = LilyPondNote::new("fis").unwrap();
-        let note_name = note_name_from_lilypond(&ly_note);
+        let note_name = note_name_from_lilypond(&ly_note).unwrap();
         assert_eq!(note_name, NoteName::F);
         let ly_note = LilyPondNote::new("ees").unwrap();
-        let note_name = note_name_from_lilypond(&ly_note);
+        let note_name = note_name_from_lilypond(&ly_note).unwrap();
         assert_eq!(note_name, NoteName::E);
         let ly_note = LilyPondNote::new("gisis").unwrap();
-        let note_name = note_name_from_lilypond(&ly_note);
+        let note_name = note_name_from_lilypond(&ly_note).unwrap();
         assert_eq!(note_name, NoteName::G);
         let ly_note = LilyPondNote::new("aeses").unwrap();
-        let note_name = note_name_from_lilypond(&ly_note);
+        let note_name = note_name_from_lilypond(&ly_note).unwrap();
         assert_eq!(note_name, NoteName::A);
     }
 }

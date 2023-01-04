@@ -177,6 +177,8 @@ impl From<&Note> for LilyPondNote {
 
 #[cfg(test)]
 mod test {
+    use std::convert::TryInto;
+
     use crate::lilypond_objects::lilypond_note::LilyPondNote;
     use crate::notation::note::Note;
     use crate::notation::pitch::{Accidental, NoteName, Octave, Pitch};
@@ -270,7 +272,10 @@ mod test {
                 dotted: true,
             },
         };
-        assert_eq!(<&LilyPondNote as Into<Note>>::into(&ly_note), test_note);
+        assert_eq!(
+            <&LilyPondNote as TryInto<Note>>::try_into(&ly_note).unwrap(),
+            test_note
+        );
         let ly_note = LilyPondNote::new("ef,,,64").unwrap();
         let test_note = Note {
             pitch: Pitch {
@@ -284,6 +289,9 @@ mod test {
                 dotted: false,
             },
         };
-        assert_eq!(<&LilyPondNote as Into<Note>>::into(&ly_note), test_note);
+        assert_eq!(
+            <&LilyPondNote as TryInto<Note>>::try_into(&ly_note).unwrap(),
+            test_note
+        );
     }
 }

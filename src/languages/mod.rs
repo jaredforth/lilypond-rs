@@ -58,9 +58,15 @@ pub fn lilypond_from_note(note: &Note) -> String {
     }
 }
 
-/// Convert a LilyPondNote into a Note object according to the value of
-/// [`NOTE_NAME_LANGUAGE`][struct@crate::NOTE_NAME_LANGUAGE].
-pub fn note_from_lilypond(note: &LilyPondNote) -> Note {
+/// Attempt to convert a LilyPondNote into a Note object according to the value
+/// of [`NOTE_NAME_LANGUAGE`][struct@crate::NOTE_NAME_LANGUAGE].
+///
+/// # Errors
+///
+/// Returns a `Result` according to whether the conversion was successful. On a
+/// success, returns `Ok(Note)`, and on a failure, returns `Err(String)` where
+/// the `String` is the associated error message.
+pub fn note_from_lilypond(note: &LilyPondNote) -> Result<Note, String> {
     match *crate::NOTE_NAME_LANGUAGE {
         NoteNameLanguage::English => english::note_from_lilypond(note),
         NoteNameLanguage::Nederlands => nederlands::note_from_lilypond(note),

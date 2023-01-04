@@ -86,6 +86,8 @@ impl PartialOrd for MidiNote {
 
 #[cfg(test)]
 mod test {
+    use std::convert::TryFrom;
+
     use crate::{
         lilypond_objects::lilypond_note::LilyPondNote, midi::midi_note::MidiNote,
         notation::note::Note,
@@ -108,7 +110,7 @@ mod test {
     }
     #[test]
     fn test_from_pitch_negative() {
-        let note = Note::from(&LilyPondNote::new("rff").unwrap());
+        let note = Note::try_from(&LilyPondNote::new("rff").unwrap()).unwrap();
         let midi_note = MidiNote::from(&note.pitch);
         assert_eq!(midi_note.get_note(), 0);
     }

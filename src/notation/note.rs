@@ -45,19 +45,28 @@ impl Note {
     }
 }
 
-impl From<&LilyPondNote> for Note {
+impl std::convert::TryFrom<&LilyPondNote> for Note {
+    type Error = String;
+
     /// Translate a lilypond note string to a note object.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `Result` according to whether or not the conversion was
+    /// successful. On a success, returns `Ok(Note)`, and on a failure, returns
+    /// `Err(String)` where the `String` is the error message.
     ///
     /// # Examples
     ///
     /// ```rust
+    /// use std::convert::TryFrom;
     /// use lilypond::lilypond_objects::lilypond_note::LilyPondNote;
     /// use lilypond::notation::note::Note;
     /// use lilypond::notation::pitch::{Pitch, NoteName, Accidental, Octave};
     /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
     ///
     /// let ly_note = LilyPondNote::new("af,8.").unwrap();
-    /// let note = Note::from(&ly_note);
+    /// let note = Note::try_from(&ly_note).unwrap();
     ///
     /// assert_eq!(note.pitch.note_name, NoteName::A);
     /// assert_eq!(note.pitch.octave, Octave::S2);
@@ -66,7 +75,7 @@ impl From<&LilyPondNote> for Note {
     /// assert_eq!(note.rhythm.dotted, true);
     /// assert_eq!(note.rhythm.duration_type, DurationType::Note);
     /// ```
-    fn from(note: &LilyPondNote) -> Note {
+    fn try_from(note: &LilyPondNote) -> Result<Self, Self::Error> {
         note_from_lilypond(note)
     }
 }
@@ -77,10 +86,11 @@ mod tests {
     use crate::notation::note::Note;
     use crate::notation::pitch::{Accidental, NoteName, Octave};
     use crate::notation::rhythm::{DurationType, Length};
+    use std::convert::TryFrom;
     #[test]
     fn test_from_lilypond_note() {
         let ly_note = LilyPondNote::new("a4").unwrap();
-        let note = Note::from(&ly_note);
+        let note = Note::try_from(&ly_note).unwrap();
         assert_eq!(note.pitch.note_name, NoteName::A);
         assert_eq!(note.pitch.octave, Octave::S3);
         assert_eq!(note.pitch.accidental, Accidental::None);
