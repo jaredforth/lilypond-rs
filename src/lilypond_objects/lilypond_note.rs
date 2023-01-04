@@ -83,15 +83,26 @@ impl LilyPondNote {
     /// This function returns a Result according to whether `&str note` matches
     /// [`LILYPOND_NOTE_REGEX`][struct@crate::lilypond_objects::lilypond_note::LILYPOND_NOTE_REGEX].
     /// On a successful match, return `Ok(LilyPondNote)`, and on a failure,
-    /// return `Err(())`.
+    /// return `Err(String)`, where the `String` is the error message.
     ///
     /// # Examples
+    ///
+    /// A successful initialization:
     ///
     /// ```rust
     /// use lilypond::lilypond_objects::lilypond_note::LilyPondNote;
     ///
     /// let ly_note = LilyPondNote::new("a4").unwrap();
     /// assert_eq!(ly_note.get_note(), "a4");
+    /// ```
+    ///
+    /// An unsuccessful initialization:
+    ///
+    /// ```rust
+    /// use lilypond::lilypond_objects::lilypond_note::LilyPondNote;
+    ///
+    /// let ly_note = LilyPondNote::new("asdf");
+    /// assert_eq!(ly_note, Err(String::from("Invalid LilyPond note \"asdf\".")));
     /// ```
     pub fn new(note: &str) -> Result<Self, String> {
         if LILYPOND_NOTE_REGEX.is_match(note) {
@@ -148,36 +159,40 @@ impl LilyPondNote {
     }
 }
 
-impl From<&Note> for LilyPondNote {
-    /// Translate a note object into a lilypond note string
+impl std::convert::TryFrom<&Note> for LilyPondNote {
+    type Error = String;
+
+    /// Attempt to translate a note object into a lilypond note string.
     ///
-    /// # Panics
+    /// # Errors
     ///
-    /// Calls `Result::unwrap()`, so may panic if the output of
-    /// [`lilypond_from_note`] is malformed in some way. If so, the language
-    /// module corresponding to the value of
+    /// Returns a `Result` according to whether the conversion was
+    /// successful. If an `Err(String)` was returned, the output of
+    /// [`lilypond_from_note`] was likely malformed in some way. If so, the
+    /// language module corresponding to the value of
     /// [`NOTE_NAME_LANGUAGE`][struct@crate::NOTE_NAME_LANGUAGE] has a bug and
     /// should be reported.
     ///
     /// # Examples
     ///
     /// ```rust
+    /// use std::convert::TryFrom;
     /// use lilypond::lilypond_objects::lilypond_note::LilyPondNote;
     /// use lilypond::notation::note::Note;
     /// use lilypond::notation::pitch::NoteName;
     ///
     /// let note = Note::new(NoteName::A);
-    /// let ly_note = LilyPondNote::from(&note);
+    /// let ly_note = LilyPondNote::try_from(&note).unwrap();
     /// assert_eq!(ly_note.get_note(), "a4");
     /// ```
-    fn from(note: &Note) -> Self {
-        LilyPondNote::new(lilypond_from_note(note).as_str()).unwrap()
+    fn try_from(note: &Note) -> Result<Self, Self::Error> {
+        LilyPondNote::new(lilypond_from_note(note).as_str())
     }
 }
 
 #[cfg(test)]
 mod test {
-    use std::convert::TryInto;
+    use std::convert::{TryFrom, TryInto};
 
     use crate::lilypond_objects::lilypond_note::LilyPondNote;
     use crate::notation::note::Note;
@@ -254,7 +269,7 @@ mod test {
     #[test]
     fn test_from_note() {
         let note = Note::new(NoteName::A);
-        let ly_note = LilyPondNote::from(&note).note;
+        let ly_note = LilyPondNote::try_from(&note).unwrap().note;
         assert_eq!("a4", ly_note);
     }
     #[test]
