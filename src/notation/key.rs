@@ -1,4 +1,4 @@
-//! Types to represent key signatures
+//! Types to represent key signatures.
 
 use std::cmp::Ordering;
 

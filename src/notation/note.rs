@@ -1,4 +1,4 @@
-//! Abstract types for musical note, describing pitch and rhythm
+//! Abstract types for musical note, describing pitch and rhythm.
 
 use crate::lilypond_objects::lilypond_note::LilyPondNote;
 use crate::notation::pitch::{NoteName, Pitch};

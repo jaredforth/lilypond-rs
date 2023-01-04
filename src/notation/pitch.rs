@@ -1,4 +1,4 @@
-//! Abstractions for specifying the pitch of notes
+//! Abstractions for specifying the pitch of notes.
 
 use crate::midi::midi_note::MidiNote;
 
