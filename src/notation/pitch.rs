@@ -198,14 +198,24 @@ impl Pitch {
     }
 }
 
-impl From<&MidiNote> for Pitch {
-    /// Convert an integer [`MidiNote`] to a [`Pitch`].
-    fn from(note: &MidiNote) -> Self {
+impl std::convert::TryFrom<&MidiNote> for Pitch {
+    type Error = String;
+
+    /// Attempt to convert an integer [`MidiNote`] to a [`Pitch`].
+    ///
+    /// # Errors
+    ///
+    /// Returns a `Result` according to whether the conversion was successful
+    /// (i.e. the MIDI integer stored in the [`MidiNote`] is positive and can be
+    /// encoded by a [`Pitch`] object). On a success, returns `Ok(Pitch)`, and
+    /// on a failure, returns `Err(String)` where the `String` is the error
+    /// message.
+    fn try_from(note: &MidiNote) -> Result<Self, Self::Error> {
         let note_int = note.get_note();
         let octave_int: i16 = note_int / 12;
         let pc_int: i16 = note_int % 12;
 
-        Pitch {
+        Ok(Pitch {
             octave: match octave_int - 1 {
                 -1 => Octave::None,
                 0 => Octave::S0,
@@ -218,7 +228,7 @@ impl From<&MidiNote> for Pitch {
                 7 => Octave::S7,
                 8 => Octave::S8,
                 9 => Octave::S9,
-                e => panic!("Invalid octave integer {}.", e),
+                e => return Err(format!("Invalid octave integer {}.", e)),
             },
             note_name: match octave_int - 1 {
                 -1 => NoteName::None,
@@ -230,7 +240,7 @@ impl From<&MidiNote> for Pitch {
                     7 => NoteName::G,
                     8 | 9 => NoteName::A,
                     10 | 11 => NoteName::B,
-                    e => panic!("Invalid pitch-class integer {}.", e),
+                    e => return Err(format!("Invalid pitch-class integer {}.", e)),
                 },
             },
             accidental: match octave_int - 1 {
@@ -239,15 +249,17 @@ impl From<&MidiNote> for Pitch {
                     0 | 2 | 4 | 5 | 7 | 9 | 11 => Accidental::None,
                     1 | 6 => Accidental::Sharp,
                     3 | 8 | 10 => Accidental::Flat,
-                    e => panic!("Invalid pitch-class integer {}.", e),
+                    e => return Err(format!("Invalid pitch-class integer {}.", e)),
                 },
             },
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod test {
+    use std::convert::TryFrom;
+
     use crate::notation::pitch::*;
     #[test]
     fn test_new() {
@@ -283,17 +295,17 @@ mod test {
     #[test]
     fn test_from_midi_note() {
         let middle_c_midi = MidiNote::new(60).unwrap();
-        let middle_c_pitch = Pitch::from(&middle_c_midi);
+        let middle_c_pitch = Pitch::try_from(&middle_c_midi).unwrap();
         assert_eq!(middle_c_pitch.octave, Octave::S4);
         assert_eq!(middle_c_pitch.note_name, NoteName::C);
         assert_eq!(middle_c_pitch.accidental, Accidental::None);
         let very_low_midi = MidiNote::new(12).unwrap();
-        let very_low_pitch = Pitch::from(&very_low_midi);
+        let very_low_pitch = Pitch::try_from(&very_low_midi).unwrap();
         assert_eq!(very_low_pitch.octave, Octave::S0);
         assert_eq!(very_low_pitch.note_name, NoteName::C);
         assert_eq!(very_low_pitch.accidental, Accidental::None);
         let very_high_midi = MidiNote::new(126).unwrap();
-        let very_high_pitch = Pitch::from(&very_high_midi);
+        let very_high_pitch = Pitch::try_from(&very_high_midi).unwrap();
         assert_eq!(very_high_pitch.octave, Octave::S9);
         assert_eq!(very_high_pitch.note_name, NoteName::F);
         assert_eq!(very_high_pitch.accidental, Accidental::Sharp);
@@ -301,7 +313,7 @@ mod test {
     #[test]
     fn test_from_midi_note_rest() {
         let midi_note = MidiNote::new(0).unwrap();
-        let pitch = Pitch::from(&midi_note);
+        let pitch = Pitch::try_from(&midi_note).unwrap();
         assert_eq!(pitch.octave, Octave::None);
         assert_eq!(pitch.note_name, NoteName::None);
         assert_eq!(pitch.accidental, Accidental::None);
