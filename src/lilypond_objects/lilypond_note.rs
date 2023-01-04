@@ -93,13 +93,13 @@ impl LilyPondNote {
     /// let ly_note = LilyPondNote::new("a4").unwrap();
     /// assert_eq!(ly_note.get_note(), "a4");
     /// ```
-    pub fn new(note: &str) -> Result<Self, ()> {
+    pub fn new(note: &str) -> Result<Self, String> {
         if LILYPOND_NOTE_REGEX.is_match(note) {
             Ok(LilyPondNote {
                 note: note.to_string(),
             })
         } else {
-            Err(())
+            Err(format!("Invalid LilyPond note \"{}\".", note))
         }
     }
 
@@ -221,7 +221,7 @@ mod test {
     }
     fn test_lilypond_note_error(ly_str: &str) {
         let note = LilyPondNote::new(ly_str);
-        assert_eq!(note, Err(()));
+        assert_eq!(note, Err(format!("Invalid LilyPond note \"{}\".", ly_str)));
     }
     #[test]
     fn test_new_lilypond_notes_error() {
