@@ -27,9 +27,9 @@ pub fn lilypond_from_note(note: &Note) -> String {
         "{}{}{}{}{}",
         lilypond_from_note_name(note),
         lilypond_from_accidental(note),
-        common::octave(note),
-        common::length(note),
-        common::dotted(note),
+        common::lilypond_from_octave(note),
+        common::lilypond_from_length(note),
+        common::lilypond_from_dotted(note),
     )
 }
 

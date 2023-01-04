@@ -7,7 +7,7 @@ use crate::{
     },
 };
 
-pub fn octave(note: &Note) -> &str {
+pub fn lilypond_from_octave(note: &Note) -> &str {
     match note.pitch.octave {
         Octave::S0 => ",,,",
         Octave::S1 => ",,",
@@ -23,7 +23,7 @@ pub fn octave(note: &Note) -> &str {
     }
 }
 
-pub fn length(note: &Note) -> &str {
+pub fn lilypond_from_length(note: &Note) -> &str {
     match note.rhythm.length {
         Length::Whole => "1",
         Length::Half => "2",
@@ -36,7 +36,7 @@ pub fn length(note: &Note) -> &str {
     }
 }
 
-pub fn dotted(note: &Note) -> &str {
+pub fn lilypond_from_dotted(note: &Note) -> &str {
     match note.rhythm.dotted {
         true => ".",
         false => "",
