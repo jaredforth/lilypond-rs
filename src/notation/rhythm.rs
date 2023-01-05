@@ -1,5 +1,7 @@
 //! Abstractions for specifying the rhythm of notes.
 
+use std::fmt::Display;
+
 /// Possible note values.
 #[repr(u16)]
 #[derive(PartialEq, Debug, Copy, Clone)]
@@ -63,13 +65,43 @@ impl Default for DurationType {
     }
 }
 
+/// A representation of the dot(s) on a note.
+#[derive(PartialEq, Debug)]
+pub struct Dots {
+    dots: u8,
+}
+
+impl Dots {
+    /// Initialize a new `Dots` with the specified number of `dots`.
+    pub fn new(dots: u8) -> Self {
+        Self { dots }
+    }
+
+    /// Get the number of dots.
+    pub fn get_num_dots(&self) -> u8 {
+        self.dots
+    }
+}
+
+impl Default for Dots {
+    fn default() -> Self {
+        Self { dots: 0 }
+    }
+}
+
+impl Display for Dots {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", ".".repeat(self.dots.into()))
+    }
+}
+
 /// A duration for a note.
 #[derive(PartialEq, Debug)]
 pub struct Rhythm {
     /// Length e.g. Quarter, Half, or Whole.
     pub length: Length,
     /// Whether or not the note is dotted.
-    pub dotted: bool,
+    pub dots: Dots,
     /// The duration type (Note or Rest).
     pub duration_type: DurationType,
 }
@@ -82,18 +114,18 @@ impl Rhythm {
     /// # Examples
     ///
     /// ```
-    /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
+    /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType, Dots};
     ///
     /// let rhythm = Rhythm::new();
     ///
     /// assert_eq!(rhythm.length, Length::Quarter);
-    /// assert_eq!(rhythm.dotted, false);
+    /// assert_eq!(rhythm.dots, Dots::new(0));
     /// assert_eq!(rhythm.duration_type, DurationType::Note);
     /// ```
     pub fn new() -> Rhythm {
         Rhythm {
             length: Default::default(),
-            dotted: false,
+            dots: Default::default(),
             duration_type: Default::default(),
         }
     }
@@ -113,21 +145,20 @@ impl Rhythm {
     pub fn length(&mut self, length: Length) {
         self.length = length;
     }
-    /// Set whether or not a rhythm is dotted.
+    /// Change the number of dots on the value.
     ///
     /// # Examples
     ///
     /// ```
-    ///
-    /// use lilypond::notation::rhythm::Rhythm;
+    /// use lilypond::notation::rhythm::{Dots, Rhythm};
     ///
     /// let mut rhythm = Rhythm::new();
-    /// rhythm.dotted(true);
+    /// rhythm.dots(2);
     ///
-    /// assert_eq!(true, rhythm.dotted);
+    /// assert_eq!(2, rhythm.dots.get_num_dots());
     /// ```
-    pub fn dotted(&mut self, is_dotted: bool) {
-        self.dotted = is_dotted;
+    pub fn dots(&mut self, num_dots: u8) {
+        self.dots = Dots::new(num_dots);
     }
     /// Set duration type.
     ///
@@ -153,7 +184,7 @@ mod test {
     fn test_new() {
         let rhythm = Rhythm::new();
         assert_eq!(rhythm.length, Length::Quarter);
-        assert_eq!(rhythm.dotted, false);
+        assert_eq!(rhythm.dots, Dots::default());
         assert_eq!(rhythm.duration_type, DurationType::Note);
     }
     #[test]
@@ -165,8 +196,8 @@ mod test {
     #[test]
     fn test_dotted() {
         let mut rhythm = Rhythm::new();
-        rhythm.dotted(true);
-        assert!(rhythm.dotted);
+        rhythm.dots(1);
+        assert_eq!(rhythm.dots.get_num_dots(), 1);
     }
     #[test]
     fn test_duration_type() {

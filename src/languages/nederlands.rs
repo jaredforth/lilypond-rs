@@ -18,7 +18,7 @@ pub static NOTE_REGEX_STR: &str = r"(?x-u)
     (?P<accidental>(?:is){0,2}|(?:es){0,2}) # accidental
     (?P<octave>(?:(?:,{0,3})|(?:'{0,6}))?) # octave transposition characters
     (?P<duration>(?:1|2|4|8|(?:16)|(?:32)|(?:64)|(?:128))?) # Durations
-    (?P<dot>\.?)$ # optional dot and end of line
+    (?P<dot>\.{0,255})$ # optional dot and end of line
     ";
 
 pub fn lilypond_from_note(note: &Note) -> String {
@@ -28,7 +28,7 @@ pub fn lilypond_from_note(note: &Note) -> String {
         lilypond_from_accidental(note),
         note.pitch.octave,
         note.rhythm.length,
-        common::lilypond_from_dotted(note),
+        note.rhythm.dots,
     )
 }
 

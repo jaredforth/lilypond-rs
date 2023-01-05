@@ -23,10 +23,10 @@ impl Note {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// use lilypond::notation::note::Note;
     /// use lilypond::notation::pitch::{Pitch, NoteName, Accidental, Octave};
-    /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
+    /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType, Dots};
     ///
     /// let note = Note::new(NoteName::A);
     ///
@@ -34,7 +34,7 @@ impl Note {
     /// assert_eq!(note.pitch.octave, Octave::S3);
     /// assert_eq!(note.pitch.accidental, Accidental::None);
     /// assert_eq!(note.rhythm.length, Length::Quarter);
-    /// assert_eq!(note.rhythm.dotted, false);
+    /// assert_eq!(note.rhythm.dots, Dots::new(0));
     /// assert_eq!(note.rhythm.duration_type, DurationType::Note);
     /// ```
     pub fn new(note_name: NoteName) -> Note {
@@ -63,7 +63,7 @@ impl std::convert::TryFrom<&LilyPondNote> for Note {
     /// use lilypond::lilypond_objects::lilypond_note::LilyPondNote;
     /// use lilypond::notation::note::Note;
     /// use lilypond::notation::pitch::{Pitch, NoteName, Accidental, Octave};
-    /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType};
+    /// use lilypond::notation::rhythm::{Rhythm, Length, DurationType, Dots};
     ///
     /// let ly_note = LilyPondNote::new("af,8.").unwrap();
     /// let note = Note::try_from(&ly_note).unwrap();
@@ -72,7 +72,7 @@ impl std::convert::TryFrom<&LilyPondNote> for Note {
     /// assert_eq!(note.pitch.octave, Octave::S2);
     /// assert_eq!(note.pitch.accidental, Accidental::Flat);
     /// assert_eq!(note.rhythm.length, Length::Eighth);
-    /// assert_eq!(note.rhythm.dotted, true);
+    /// assert_eq!(note.rhythm.dots, Dots::new(1));
     /// assert_eq!(note.rhythm.duration_type, DurationType::Note);
     /// ```
     fn try_from(note: &LilyPondNote) -> Result<Self, Self::Error> {
@@ -85,7 +85,7 @@ mod tests {
     use crate::lilypond_objects::lilypond_note::LilyPondNote;
     use crate::notation::note::Note;
     use crate::notation::pitch::{Accidental, NoteName, Octave};
-    use crate::notation::rhythm::{DurationType, Length};
+    use crate::notation::rhythm::{Dots, DurationType, Length};
     use std::convert::TryFrom;
     #[test]
     fn test_from_lilypond_note() {
@@ -95,7 +95,7 @@ mod tests {
         assert_eq!(note.pitch.octave, Octave::S3);
         assert_eq!(note.pitch.accidental, Accidental::None);
         assert_eq!(note.rhythm.length, Length::Quarter);
-        assert_eq!(note.rhythm.dotted, false);
+        assert_eq!(note.rhythm.dots, Dots::new(0));
         assert_eq!(note.rhythm.duration_type, DurationType::Note);
     }
 }

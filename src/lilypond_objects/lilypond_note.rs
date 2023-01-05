@@ -197,7 +197,7 @@ mod test {
     use crate::lilypond_objects::lilypond_note::LilyPondNote;
     use crate::notation::note::Note;
     use crate::notation::pitch::{Accidental, NoteName, Octave, Pitch};
-    use crate::notation::rhythm::{DurationType, Length, Rhythm};
+    use crate::notation::rhythm::{Dots, DurationType, Length, Rhythm};
     fn test_lilypond_note(ly_str: &str) {
         let note = LilyPondNote::new(ly_str).unwrap().note;
         assert_eq!(ly_str, note);
@@ -284,7 +284,7 @@ mod test {
             rhythm: Rhythm {
                 length: Length::Eighth,
                 duration_type: DurationType::Rest,
-                dotted: true,
+                dots: Dots::new(1),
             },
         };
         assert_eq!(
@@ -301,7 +301,7 @@ mod test {
             rhythm: Rhythm {
                 length: Length::SixtyFourth,
                 duration_type: DurationType::Note,
-                dotted: false,
+                dots: Dots::new(0),
             },
         };
         assert_eq!(

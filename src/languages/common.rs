@@ -1,20 +1,14 @@
 //! Common functions for parsing and encoding LilyPond
 
+use std::convert::TryInto;
+
 use crate::{
     lilypond_objects::lilypond_note::LilyPondNote,
     notation::{
-        note::Note,
         pitch::Octave,
-        rhythm::{DurationType, Length, Rhythm},
+        rhythm::{Dots, DurationType, Length, Rhythm},
     },
 };
-
-pub fn lilypond_from_dotted(note: &Note) -> &str {
-    match note.rhythm.dotted {
-        true => ".",
-        false => "",
-    }
-}
 
 pub fn duration_type_from_lilypond(note: &LilyPondNote) -> DurationType {
     match note.get_capture("note_name").as_str() {
@@ -62,7 +56,7 @@ pub fn rhythm_from_lilypond(note: &LilyPondNote) -> Result<Rhythm, String> {
     Ok(Rhythm {
         duration_type: duration_type_from_lilypond(note),
         length: length_from_lilypond(note)?,
-        dotted: dotted_from_lilypond(note),
+        dots: dotted_from_lilypond(note)?,
     })
 }
 
@@ -81,8 +75,12 @@ fn length_from_lilypond(note: &LilyPondNote) -> Result<Length, String> {
     }
 }
 
-fn dotted_from_lilypond(note: &LilyPondNote) -> bool {
-    note.get_capture("dot") == "."
+fn dotted_from_lilypond(note: &LilyPondNote) -> Result<Dots, String> {
+    let num_dots = note.get_capture("dot").matches(".").count().try_into();
+    match num_dots {
+        Ok(n) => Ok(Dots::new(n)),
+        Err(e) => Err(format!("Invalid number of dots {}.", e)),
+    }
 }
 
 #[cfg(test)]
@@ -128,8 +126,10 @@ mod test {
     #[test]
     fn get_dot() {
         let ly_note = LilyPondNote::new("r8.").unwrap();
-        assert!(dotted_from_lilypond(&ly_note));
+        assert_eq!(dotted_from_lilypond(&ly_note).unwrap().get_num_dots(), 1);
         let ly_note = LilyPondNote::new("r8").unwrap();
-        assert!(!dotted_from_lilypond(&ly_note));
+        assert_eq!(dotted_from_lilypond(&ly_note).unwrap().get_num_dots(), 0);
+        let ly_note = LilyPondNote::new("r8............").unwrap();
+        assert_eq!(dotted_from_lilypond(&ly_note).unwrap().get_num_dots(), 12);
     }
 }
