@@ -27,8 +27,8 @@ pub fn lilypond_from_note(note: &Note) -> String {
         "{}{}{}{}{}",
         lilypond_from_note_name(note),
         lilypond_from_accidental(note),
-        common::lilypond_from_octave(note),
-        common::lilypond_from_length(note),
+        note.pitch.octave,
+        note.rhythm.length,
         common::lilypond_from_dotted(note),
     )
 }

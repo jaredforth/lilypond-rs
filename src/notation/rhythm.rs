@@ -1,16 +1,45 @@
 //! Abstractions for specifying the rhythm of notes.
 
-/// Possible lengths.
-#[derive(PartialEq, Debug)]
+/// Possible note values.
+#[repr(u16)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 pub enum Length {
-    Whole,
-    Half,
-    Quarter,
-    Eighth,
-    Sixteenth,
-    ThirtySecond,
-    SixtyFourth,
-    OneTwentyEighth,
+    Whole = 1,
+    Half = 2,
+    Quarter = 4,
+    Eighth = 8,
+    Sixteenth = 16,
+    ThirtySecond = 32,
+    SixtyFourth = 64,
+    OneTwentyEighth = 128,
+}
+
+impl Length {
+    /// Return a `u16` representation of the note value.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use lilypond::notation::rhythm::Length;
+    ///
+    /// assert_eq!(Length::Whole.as_u16(), 1);
+    /// assert_eq!(Length::Half.as_u16(), 2);
+    /// assert_eq!(Length::Quarter.as_u16(), 4);
+    /// assert_eq!(Length::Eighth.as_u16(), 8);
+    /// assert_eq!(Length::Sixteenth.as_u16(), 16);
+    /// assert_eq!(Length::ThirtySecond.as_u16(), 32);
+    /// assert_eq!(Length::SixtyFourth.as_u16(), 64);
+    /// assert_eq!(Length::OneTwentyEighth.as_u16(), 128);
+    /// ```
+    pub fn as_u16(&self) -> u16 {
+        *self as u16
+    }
+}
+
+impl std::fmt::Display for Length {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+        write!(f, "{}", self.as_u16())
+    }
 }
 
 impl Default for Length {

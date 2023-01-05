@@ -71,6 +71,28 @@ pub enum Octave {
     None,
 }
 
+impl std::fmt::Display for Octave {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Octave::S0 => ",,,",
+                Octave::S1 => ",,",
+                Octave::S2 => ",",
+                Octave::S3 => "",
+                Octave::S4 => "'",
+                Octave::S5 => "''",
+                Octave::S6 => "'''",
+                Octave::S7 => "''''",
+                Octave::S8 => "'''''",
+                Octave::S9 => "''''''",
+                Octave::None => "",
+            }
+        )
+    }
+}
+
 impl Default for Octave {
     /// Set octave directly below middle C (C3--B3) as default.
     fn default() -> Self {

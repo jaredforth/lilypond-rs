@@ -1,3 +1,5 @@
+//! Common functions for parsing and encoding LilyPond
+
 use crate::{
     lilypond_objects::lilypond_note::LilyPondNote,
     notation::{
@@ -6,35 +8,6 @@ use crate::{
         rhythm::{DurationType, Length, Rhythm},
     },
 };
-
-pub fn lilypond_from_octave(note: &Note) -> &str {
-    match note.pitch.octave {
-        Octave::S0 => ",,,",
-        Octave::S1 => ",,",
-        Octave::S2 => ",",
-        Octave::S3 => "",
-        Octave::S4 => "'",
-        Octave::S5 => "''",
-        Octave::S6 => "'''",
-        Octave::S7 => "''''",
-        Octave::S8 => "'''''",
-        Octave::S9 => "''''''",
-        Octave::None => "",
-    }
-}
-
-pub fn lilypond_from_length(note: &Note) -> &str {
-    match note.rhythm.length {
-        Length::Whole => "1",
-        Length::Half => "2",
-        Length::Quarter => "4",
-        Length::Eighth => "8",
-        Length::Sixteenth => "16",
-        Length::ThirtySecond => "32",
-        Length::SixtyFourth => "64",
-        Length::OneTwentyEighth => "128",
-    }
-}
 
 pub fn lilypond_from_dotted(note: &Note) -> &str {
     match note.rhythm.dotted {
