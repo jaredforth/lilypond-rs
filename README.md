@@ -45,7 +45,7 @@ information.
 
 ## Inspiration
 
-One of the major inspirations for this library is [Abjad](http://abjad.mbrsi.org/), and the goal is that eventually a similar compositional workflow can be achieved in Rust.
+One of the major inspirations for this library is [Abjad](https://abjad.github.io/), and the goal is that eventually a similar compositional workflow can be achieved in Rust.
 
 ## Contribution 
 
